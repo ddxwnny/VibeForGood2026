@@ -143,3 +143,31 @@ def test_fake_alert_satisfies_alert_port() -> None:
     }
     implemented = {n for n, _ in inspect.getmembers(FakeAlert, predicate=inspect.isfunction)}
     assert not (abstract - implemented)
+
+
+def test_fake_composer_satisfies_composer_port() -> None:
+    from recollect.adapters.fake_composer import FakeComposer
+    from recollect.core.ports.composer_port import ComposerPort
+    import inspect
+
+    assert issubclass(FakeComposer, ComposerPort)
+    abstract = {
+        n for n, _ in inspect.getmembers(ComposerPort, predicate=inspect.isfunction)
+        if getattr(getattr(ComposerPort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(FakeComposer, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)
+
+
+def test_fake_delivery_log_satisfies_delivery_log_port() -> None:
+    from recollect.adapters.fake_delivery_log import FakeDeliveryLog
+    from recollect.core.ports.delivery_port import DeliveryLogPort
+    import inspect
+
+    assert issubclass(FakeDeliveryLog, DeliveryLogPort)
+    abstract = {
+        n for n, _ in inspect.getmembers(DeliveryLogPort, predicate=inspect.isfunction)
+        if getattr(getattr(DeliveryLogPort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(FakeDeliveryLog, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)
