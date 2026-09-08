@@ -115,3 +115,31 @@ def test_fake_audio_store_satisfies_audio_store_port() -> None:
     }
     missing = abstract_methods - fake_methods
     assert not missing, f"FakeAudioStore is missing implementations: {missing}"
+
+
+def test_fake_heartbeat_satisfies_heartbeat_port() -> None:
+    from recollect.adapters.fake_heartbeat import FakeHeartbeat
+    from recollect.core.ports.heartbeat_port import HeartbeatPort
+    import inspect
+
+    assert issubclass(FakeHeartbeat, HeartbeatPort)
+    abstract = {
+        n for n, _ in inspect.getmembers(HeartbeatPort, predicate=inspect.isfunction)
+        if getattr(getattr(HeartbeatPort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(FakeHeartbeat, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)
+
+
+def test_fake_alert_satisfies_alert_port() -> None:
+    from recollect.adapters.fake_alert import FakeAlert
+    from recollect.core.ports.alert_port import AlertPort
+    import inspect
+
+    assert issubclass(FakeAlert, AlertPort)
+    abstract = {
+        n for n, _ in inspect.getmembers(AlertPort, predicate=inspect.isfunction)
+        if getattr(getattr(AlertPort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(FakeAlert, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)
