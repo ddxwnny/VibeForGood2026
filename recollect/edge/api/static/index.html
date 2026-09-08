@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recollect — mock frontend</title>
+  <style>
+    :root { --ink: #243D36; --muted: #59685F; --primary: #19594E; --surface: #FFFEFA; --soft: #E8EFDF; --border: #DCE1D6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Avenir Next", "Segoe UI", sans-serif; color: var(--ink); background: #F8F7F2; }
+    header { padding: 24px 32px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    header h1 { margin: 0; font-family: Georgia, serif; font-weight: 400; font-size: 28px; }
+    header .tag { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    main { max-width: 720px; margin: 24px auto; padding: 0 20px; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+    .panel h2 { margin: 0 0 8px; font-size: 16px; }
+    .panel p { margin: 0; color: var(--muted); font-size: 14px; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .ok { background: var(--soft); color: var(--primary); }
+    .err { background: #FBEFD7; color: #775414; }
+    code { background: var(--soft); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Recollect</h1>
+    <div class="tag">MOCK frontend — throwaway. Replaced by the Next.js app (dawn &amp; kaiyi).</div>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>Backend health</h2>
+      <p><span id="health" class="badge">checking…</span> <code>GET /api/health</code></p>
+    </section>
+    <section class="panel">
+      <h2>Enrol a senior</h2>
+      <p><code>POST /api/enrolments</code> — not built yet (Epic 2).</p>
+    </section>
+    <section class="panel">
+      <h2>Functional series</h2>
+      <p><code>GET /api/seniors/{id}/observations</code> — not built yet (Epic 1).</p>
+    </section>
+    <section class="panel">
+      <h2>Weekly window</h2>
+      <p><code>GET /api/seniors/{id}/window</code> — not built yet (Epic 6).</p>
+    </section>
+    <section class="panel">
+      <h2>Roster</h2>
+      <p><code>GET /api/roster</code> — not built yet (Epic 3).</p>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
