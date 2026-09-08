@@ -160,6 +160,8 @@ Track: A (Bread04). Raw audio is discarded after extraction; withdrawal and deat
 
 ## Epic 1: The functional record
 
+**Owner(s):** Bread04 and Yan Herng
+
 **Goal:** A senior's dated, judgement-free record exists and reads back with provenance — the append-only observation log, core entities, ports, and architecture tests. *(Track: Foundation — shared.)*
 
 *First dev action: scaffold the FastAPI + PostgreSQL project (Python 3.13, Alembic migrations, `core/ app/ adapters/ edge/` source tree) per the Architecture Spine's Stack and Structural Seed before Story 1.1.*
@@ -203,6 +205,8 @@ So that core depends on nothing and adapters are swappable without touching doma
 
 ## Epic 2: Care-worker-led enrolment
 
+**Owner:** Bread04
+
 **Goal:** A care worker enrols a senior in one visit, capturing the four consent artefacts; the write path rejects data without an active enrolment. *(Track A — Bread04.)*
 
 ### Story 2.1: Enrolment with a write-path consent gate
@@ -243,6 +247,8 @@ So that the consent is defensible as her own statement.
 
 ## Epic 3: Roster and device liveness
 
+**Owner:** Bread04
+
 **Goal:** A care worker sees their seniors, liveness, and consent status in a fixed-order roster; dead devices and unrecognised turns never read as decline. *(Track A — Bread04.)*
 
 ### Story 3.1: Liveness heartbeat and unreachable detection
@@ -282,6 +288,8 @@ So that no concern level, score, badge, sort, or highlight derived from the seri
 **And** no element derived from the series appears in the view.
 
 ## Epic 4: Addressed-only voice and everyday tasks
+
+**Owner:** Yan Herng
 
 **Goal:** The senior talks to the device with no login, only addressed speech is captured, and she handles medication, appointments, mail, and routines. *(Track B — Yan Herng.)*
 
@@ -344,6 +352,8 @@ So that my routines are tracked and each completion is recorded.
 
 ## Epic 5: Voice-native instrument delivery
 
+**Owner:** Yan Herng
+
 **Goal:** Instrument items are delivered as ordinary conversation, rotated and spaced, never scored, never repeated in a refractory window. *(Track B — Yan Herng.)*
 
 ### Story 5.1: Instrument delivery as conversation
@@ -394,6 +404,8 @@ So that I am never scored and never pressured.
 **Then** a `declined` record is produced and zero further prompts occur that interaction.
 
 ## Epic 6: Weekly window, continuous disclosure, and personalised conversation
+
+**Owner:** Yan Herng
 
 **Goal:** The named recipient gets a judgement-free weekly window; the senior hears the same account; conversation is warm and personal, bounded against over-reliance. *(Track B — Yan Herng.)*
 
@@ -461,6 +473,8 @@ So that engagement never becomes the relationship.
 **And** after a task completes, it opens no new topic unless I initiate.
 
 ## Epic 7: Data lifecycle and erasure
+
+**Owner:** Bread04
 
 **Goal:** Raw audio is discarded after extraction; withdrawal and death execute crypto-shred erasure, verifiable by inspection. *(Track A — Bread04.)*
 
