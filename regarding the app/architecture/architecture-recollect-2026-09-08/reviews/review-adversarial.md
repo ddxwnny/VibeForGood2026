@@ -1,12 +1,12 @@
 ---
 review: adversarial
 target: ../ARCHITECTURE-SPINE.md
-spec: ../../../specs/spec-cognitive-change-companion/SPEC.md
+spec: ../../../specs/spec-recollect/SPEC.md
 date: '2026-09-08'
 stance: 'Assume two competent teams, each reading only the spine, each obeying every AD to the letter, each shipping something the other cannot integrate with.'
 ---
 
-# Adversarial review — cognitive-change-companion architecture spine
+# Adversarial review — recollect architecture spine
 
 ## Method
 

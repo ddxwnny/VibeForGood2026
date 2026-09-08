@@ -1,12 +1,12 @@
 ---
 review-of: ../ARCHITECTURE-SPINE.md
-spec: ../../../specs/spec-cognitive-change-companion/SPEC.md
+spec: ../../../specs/spec-recollect/SPEC.md
 type: rubric-walk
 reviewer: architecture reviewer
 date: '2026-09-08'
 ---
 
-# Rubric review — ARCHITECTURE-SPINE.md (cognitive-change-companion)
+# Rubric review — ARCHITECTURE-SPINE.md (recollect)
 
 ## Verdict
 

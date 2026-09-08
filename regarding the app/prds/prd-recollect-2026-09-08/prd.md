@@ -1,15 +1,15 @@
 ---
-title: Cognitive-Change Companion — v1 Observation Layer
+title: Recollect — v1 Observation Layer
 status: draft
 created: 2026-09-08
 updated: 2026-09-08
 ---
 
-# PRD: Cognitive-Change Companion — v1 Observation Layer
+# PRD: Recollect — v1 Observation Layer
 
 ## 0. Document Purpose
 
-This PRD is for the product owner, the engineering team, and the downstream workflows it feeds (`bmad-ux`, `bmad-create-epics-and-stories`). It is the people-facing, decision-ready statement of **what** v1 builds and **why**, structured so a reader can act without re-reading the source contract. It builds on — and does not duplicate — two prior artifacts that remain authoritative: the canonical **SPEC** (`regarding the app/specs/spec-cognitive-change-companion/SPEC.md` + its four companions) holds the capabilities, constraints, and success criteria; the **Architecture Spine** (`regarding the app/architecture/architecture-cognitive-change-companion-2026-09-08/ARCHITECTURE-SPINE.md`, AD-1..AD-16) holds the implementation invariants and stack. Where those two decide a technical mechanism, this PRD states the requirement and points at the spine rather than re-deciding it. The Glossary anchors a controlled vocabulary that all downstream artifacts must use verbatim; features group the requirements; assumptions are tagged inline and indexed in §9.
+This PRD is for the product owner, the engineering team, and the downstream workflows it feeds (`bmad-ux`, `bmad-create-epics-and-stories`). It is the people-facing, decision-ready statement of **what** v1 builds and **why**, structured so a reader can act without re-reading the source contract. It builds on — and does not duplicate — two prior artifacts that remain authoritative: the canonical **SPEC** (`regarding the app/specs/spec-recollect/SPEC.md` + its four companions) holds the capabilities, constraints, and success criteria; the **Architecture Spine** (`regarding the app/architecture/architecture-recollect-2026-09-08/ARCHITECTURE-SPINE.md`, AD-1..AD-16) holds the implementation invariants and stack. Where those two decide a technical mechanism, this PRD states the requirement and points at the spine rather than re-deciding it. The Glossary anchors a controlled vocabulary that all downstream artifacts must use verbatim; features group the requirements; assumptions are tagged inline and indexed in §9.
 
 ## 1. Vision
 

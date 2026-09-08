@@ -1,4 +1,4 @@
-# Forged idea — cognitive-change companion
+# Forged idea — Recollect
 
 **What it is:** A voice companion deployed through community care to seniors living alone. It does a real job (medications, appointments, official mail), and the same data that proves it's being used is the data that shows functional decline.
 

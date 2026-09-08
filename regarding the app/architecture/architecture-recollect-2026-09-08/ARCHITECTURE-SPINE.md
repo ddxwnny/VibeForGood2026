@@ -1,5 +1,5 @@
 ---
-name: 'cognitive-change-companion'
+name: 'recollect'
 type: architecture-spine
 purpose: build-substrate
 altitude: feature
@@ -10,15 +10,15 @@ created: '2026-09-08'
 updated: '2026-09-08'
 binds: [CAP-1, CAP-2, CAP-3, CAP-4, CAP-5, CAP-6, CAP-7, CAP-8, CAP-9, CAP-10]
 sources:
-  - ../../specs/spec-cognitive-change-companion/SPEC.md
+  - ../../specs/spec-recollect/SPEC.md
 companions:
-  - ../../specs/spec-cognitive-change-companion/signal-catalog.md
-  - ../../specs/spec-cognitive-change-companion/instrument-protocol.md
-  - ../../specs/spec-cognitive-change-companion/consent-and-data-governance.md
-  - ../../specs/spec-cognitive-change-companion/communication-rules.md
+  - ../../specs/spec-recollect/signal-catalog.md
+  - ../../specs/spec-recollect/instrument-protocol.md
+  - ../../specs/spec-recollect/consent-and-data-governance.md
+  - ../../specs/spec-recollect/communication-rules.md
 ---
 
-# Architecture Spine — cognitive-change-companion
+# Architecture Spine — Recollect
 
 ## Design Paradigm
 
@@ -253,7 +253,7 @@ erDiagram
 Source tree:
 
 ```text
-cognitive-change-companion/
+recollect/
   core/            # entities, rules, policies — depends on nothing
     ports/         # interfaces the domain owns (LLM, STT, TTS, log, clock)
   app/             # use cases: enrol, ingest, compose weekly, read window

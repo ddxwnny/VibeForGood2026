@@ -1,18 +1,18 @@
 ---
-id: SPEC-cognitive-change-companion
+id: SPEC-recollect
 companions:
   - signal-catalog.md
   - instrument-protocol.md
   - consent-and-data-governance.md
   - communication-rules.md
-  - ../../architecture/architecture-cognitive-change-companion-2026-09-08/ARCHITECTURE-SPINE.md
+  - ../../architecture/architecture-recollect-2026-09-08/ARCHITECTURE-SPINE.md
 sources:
-  - ../../forge/cognitive-change-companion/forged-idea.md
+  - ../../forge/recollect/forged-idea.md
 ---
 
 > **Canonical contract.** This SPEC and the files in `companions:` are the complete, preservation-validated contract for what to build, test, and validate. Source documents listed in frontmatter are for traceability — consult them only if you need narrative rationale or prose color this contract intentionally omits.
 
-# Cognitive-Change Companion — v1 Observation Layer
+# Recollect — v1 Observation Layer
 
 ## Why
 

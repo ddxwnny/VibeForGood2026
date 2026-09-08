@@ -2,10 +2,10 @@
 review: privacy-consent-regulatory
 artifact: ../ARCHITECTURE-SPINE.md
 sources:
-  - ../../../specs/spec-cognitive-change-companion/SPEC.md
-  - ../../../specs/spec-cognitive-change-companion/consent-and-data-governance.md
-  - ../../../specs/spec-cognitive-change-companion/communication-rules.md
-  - ../../../specs/spec-cognitive-change-companion/signal-catalog.md
+  - ../../../specs/spec-recollect/SPEC.md
+  - ../../../specs/spec-recollect/consent-and-data-governance.md
+  - ../../../specs/spec-recollect/communication-rules.md
+  - ../../../specs/spec-recollect/signal-catalog.md
 reviewer: privacy, consent and regulatory-compliance lens
 date: '2026-09-08'
 status: draft
