@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "bmad": {
+      "source": "bmad-code-org/BMAD-METHOD",
+      "sourceType": "github",
+      "skillPath": "skills/bmad/SKILL.md",
+      "computedHash": "71110afb44ec1606c9cdcfd87cd54bd96a3abaaed2e9e4bfde750753d0e507ee"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "task-master-ai": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "task-master-ai"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "TASK_MASTER_TOOLS": "standard",
+        "TASK_MASTER_DATA_DIR": "C:\\Users\\yAnhe\\Desktop\\VibeForGood2026"
+      }
+    }
+  }
+}
