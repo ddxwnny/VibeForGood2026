@@ -1,5 +1,7 @@
 # Recollect
 
+Author: NgYanHerng
+
 A responsive UI/UX prototype for family connection and everyday conversations.
 Built with plain HTML, CSS and JavaScript, served by a dependency-free Node.js backend.
 
