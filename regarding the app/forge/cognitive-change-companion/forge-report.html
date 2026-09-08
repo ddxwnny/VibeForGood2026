@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forge Report — Cognitive-Change Companion</title>
+<style>
+  :root{
+    --ink:#14110f; --ink2:#1c1815; --paper:#f2ece1; --paper2:#e6ddcd;
+    --ember:#d4571f; --ember2:#f0913f; --brass:#c9a227; --seal:#a3231d;
+    --muted:#9a9187; --line:#3a322b; --amber:#e0a03c; --green:#7fa650;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--paper);
+    font:16px/1.65 "Iowan Old Style","Palatino Linotype",Georgia,serif;
+    background-image:radial-gradient(ellipse at 50% -10%, rgba(212,87,31,.16), transparent 60%);}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 28px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:8px}
+  .kicker{font:600 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ember2)}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.1;margin:14px 0 10px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:15px;max-width:62ch}
+  .meta{margin-top:18px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  .meta b{color:var(--paper2);font-weight:500}
+
+  .sealrow{display:flex;gap:32px;align-items:center;flex-wrap:wrap;
+    margin:38px 0 12px;padding:26px;border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)}
+  .sealrow .verdict{flex:1;min-width:260px}
+  .verdict h2{margin:0 0 8px;font-size:22px}
+  .verdict p{margin:0;color:var(--paper2);font-size:15px}
+
+  h3.sec{font:600 12px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ember2);margin:54px 0 18px;
+    padding-bottom:10px;border-bottom:1px solid var(--line)}
+
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .card{border:1px solid var(--line);border-radius:11px;padding:16px 18px;background:var(--ink2)}
+  .card h4{margin:0 0 8px;font-size:15px;color:var(--paper)}
+  .card p{margin:0;font-size:14px;color:var(--paper2)}
+  .card .why{display:block;margin-top:8px;font-size:13px;color:var(--muted);font-style:italic}
+  .card.lock{border-left:3px solid var(--green)}
+  .card.weak{border-left:3px solid var(--amber)}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+  th{text-align:left;font:600 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);padding:0 12px 10px 0;border-bottom:1px solid var(--line)}
+  td{padding:12px 12px 12px 0;border-bottom:1px solid rgba(58,50,43,.6);vertical-align:top;color:var(--paper2)}
+  td.k{color:var(--paper);width:34%}
+  .scroll{overflow-x:auto}
+
+  .cast{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .p{display:flex;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--ink2)}
+  .p .ico{font-size:22px;line-height:1.2}
+  .p b{display:block;font-size:14px}
+  .p .role{font:11px/1.5 ui-sans-serif,system-ui,sans-serif;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ember2)}
+  .p .said{margin-top:6px;font-size:13px;color:var(--muted);font-style:italic}
+  .lead{font-size:15px;color:var(--paper2);max-width:70ch}
+  footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);
+    font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  @media print{body{background:#fff;color:#111}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">BMad &middot; Forge Report</div>
+  <h1>Cognitive-Change Companion</h1>
+  <p class="sub">A voice companion for seniors living alone that does a real job &mdash; and lets the people around them notice, honestly, when something has changed.</p>
+  <div class="meta">
+    <b>Source</b> VibeForGood.md &middot; ACE Challenge Statement 2<br>
+    <b>Goal</b> Make it better &mdash; drive open branches to concrete decisions<br>
+    <b>Context</b> Real deployment in Singapore, not only a hackathon pitch<br>
+    <b>Session</b> 2026-09-08 &middot; 10 branches &middot; 22 locks &middot; 6 open weak points
+  </div>
+</header>
+
+<div class="sealrow">
+  <svg width="176" height="176" viewBox="0 0 200 200" role="img" aria-label="Wax seal stamped HARDENED">
+    <defs>
+      <radialGradient id="wax" cx="38%" cy="30%">
+        <stop offset="0%" stop-color="#d4453c"/><stop offset="55%" stop-color="#a3231d"/>
+        <stop offset="100%" stop-color="#5e100d"/>
+      </radialGradient>
+      <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter>
+      <path id="arcTop" d="M 100,100 m -66,0 a 66,66 0 0 1 132,0" fill="none"/>
+      <path id="arcBot" d="M 100,100 m 62,0 a 62,62 0 0 1 -124,0" fill="none"/>
+    </defs>
+    <g filter="url(#rough)">
+      <circle cx="100" cy="100" r="86" fill="url(#wax)"/>
+      <circle cx="100" cy="100" r="86" fill="none" stroke="#3d0a08" stroke-width="2" opacity=".8"/>
+    </g>
+    <circle cx="100" cy="100" r="74" fill="none" stroke="#f6c9c2" stroke-width="1.6" opacity=".55"/>
+    <circle cx="100" cy="100" r="68" fill="none" stroke="#f6c9c2" stroke-width="0.9" opacity=".35"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="10.5" font-weight="700"
+          letter-spacing="4.2" fill="#f8d9d3" opacity=".9">
+      <textPath href="#arcTop" startOffset="50%" text-anchor="middle">PRESSURE-TESTED</textPath>
+    </text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="600"
+          letter-spacing="3.4" fill="#f0b8b0" opacity=".75">
+      <textPath href="#arcBot" startOffset="50%" text-anchor="middle">BMAD FORGE &middot; 2026</textPath>
+    </text>
+    <text x="100" y="95" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif"
+          font-size="21" font-weight="800" letter-spacing="1.5" fill="#fff2ee">HARDENED</text>
+    <line x1="58" y1="106" x2="142" y2="106" stroke="#f8d9d3" stroke-width="1.4" opacity=".6"/>
+    <text x="100" y="124" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif"
+          font-size="9.5" letter-spacing="2.6" fill="#f4c8c1" opacity=".85">10 BRANCHES</text>
+  </svg>
+  <div class="verdict">
+    <h2>Outcome &mdash; Hardened</h2>
+    <p>The idea survived, but not in the shape it arrived in. Two contradictions inside the source document were found and resolved, one symptom the entire consent model had ignored was named, and the product&rsquo;s centre of gravity moved from a companion that measures speech to a <b>utility whose usage data is the clinical signal</b>. It is now specific enough to build, cost and defend &mdash; with six weak points that are known rather than hidden.</p>
+  </div>
+</div>
+
+<h3 class="sec">What moved</h3>
+<p class="lead">Three shifts did most of the work. Almost everything else follows from them.</p>
+<div class="grid">
+  <div class="card lock"><h4>From speech analysis &rarr; to function</h4>
+    <p>The signal is what she <em>does</em>, not how she talks. Missed appointments, letters she can&rsquo;t handle, routines that stop.</p>
+    <span class="why">Task completion has no practice effect, and functional decline is already a recognised clinical signal. The engagement metric and the health metric became the same quantity.</span></div>
+  <div class="card lock"><h4>From consent-at-the-flag &rarr; to a Ulysses contract</h4>
+    <p>She names who gets told, and whether she is told first, at onboarding &mdash; while clearly able. The system later executes that instruction.</p>
+    <span class="why">Loss of insight is a symptom of what is being detected. Asking permission at flag time asks the exact faculty under measurement.</span></div>
+  <div class="card lock"><h4>From a warning light &rarr; to a connection surface</h4>
+    <p>The family opens a weekly window into her life. The safety layer rides inside a channel they already read.</p>
+    <span class="why">A dashboard whose only states are &ldquo;nothing&rdquo; and &ldquo;bad news&rdquo; is a dread notification. The flag would have arrived on a dead channel.</span></div>
+</div>
+
+<h3 class="sec">Locked decisions</h3>
+<div class="grid">
+  <div class="card lock"><h4>Addressed-only capture</h4><p>No ambient listening. No login ritual, but it wakes only when she speaks to it.</p><span class="why">Kills third-party consent and speaker-attribution corruption in one move.</span></div>
+  <div class="card lock"><h4>Instruments stay, voice-native</h4><p>The MoCA family of items was designed to be administered aloud. Conversation is their original form, not a disguise.</p></div>
+  <div class="card lock"><h4>Two-speed engine</h4><p>Sharp drop over days &rarr; possible delirium: urgent and reversible. Slow drift &rarr; the dementia pathway. Drop with mood and sleep change &rarr; depression.</p><span class="why">Turned the biggest confound into the strongest near-term clinical win.</span></div>
+  <div class="card lock"><h4>Task completion is the primary metric</h4><p>Real human contact is a counter-metric with veto power. Time-talking-to-AI is watched, never optimised.</p></div>
+  <div class="card lock"><h4>Community care, not consumer</h4><p>The care worker enrols and co-signs on a visit that was happening anyway. The senior pays nothing.</p><span class="why">A consumer model reaches only seniors who already have engaged family &mdash; inverting the targeting.</span></div>
+  <div class="card lock"><h4>Flags carry their evidence</h4><p>What changed, over what window, with dated instances. Triage from a desk in two minutes instead of a home visit.</p><span class="why">The care worker&rsquo;s cost was never the number of flags. It was the cost of each one.</span></div>
+  <div class="card lock"><h4>Split regulatory posture</h4><p>Observation ships first &mdash; a record, never a judgement. Screening is regulated, later. Sorting counts as judgement.</p><span class="why">v1 makes no clinical claim, so its deployment is how v2&rsquo;s evidence gets made.</span></div>
+  <div class="card lock"><h4>Research consent at enrolment</h4><p>Taken in her own voice alongside the Ulysses contract, on day one.</p><span class="why">Retrofitting it across a cohort of seniors a year later is not recoverable.</span></div>
+  <div class="card lock"><h4>Error tuning per lane</h4><p>Delirium: sensitive &mdash; a false alarm says &ldquo;check for an infection.&rdquo; Drift: specific, low-stakes wording, care worker only.</p><span class="why">Set by the stigma cost of being wrong, which differs enormously between the two.</span></div>
+  <div class="card lock"><h4>Never the word &ldquo;Stable&rdquo;</h4><p>Say &ldquo;nothing new noticed&rdquo; &mdash; what the system did, not what is true of her.</p></div>
+  <div class="card lock"><h4>Nothing hidden from her</h4><p>She hears weekly what the family sees. No reveal, because no secret.</p></div>
+  <div class="card lock"><h4>Warmth is texture, not role</h4><p>Deep personalisation stays. The &ldquo;AI son&rdquo; framing goes.</p></div>
+</div>
+
+<h3 class="sec">Rejected, and why</h3>
+<div class="scroll">
+<table>
+  <tr><th>Rejected</th><th>Reason it didn&rsquo;t survive</th></tr>
+  <tr><td class="k">Passive speech-acoustic analysis as the signal</td><td>Research-grade, no clinical pathway consumes it, and Singapore&rsquo;s dialect range and code-switching make the baseline unworkable.</td></tr>
+  <tr><td class="k">Ambient, always-on listening</td><td>Records non-consenting visitors, corrupts the baseline through speaker attribution, and contradicts the project&rsquo;s own stated ethics.</td></tr>
+  <tr><td class="k">Asking permission when the flag fires</td><td>Anosognosia. It fails hardest on precisely the people it was built for.</td></tr>
+  <tr><td class="k">Telling the family and not her</td><td>Rejected outright. Nothing about her is hidden from her.</td></tr>
+  <tr><td class="k">The &ldquo;AI son&rdquo;</td><td>Gives the real family permission to stay away, manufactures the social-withdrawal signal being measured, and reads as a verdict on her children.</td></tr>
+  <tr><td class="k">Engagement as the primary metric</td><td>Growth purchased in the currency of the product&rsquo;s own validity.</td></tr>
+  <tr><td class="k">A ranked caseload for the care worker</td><td>Cross-person severity cannot be defended, and a wrong ranking hands everyone below the fold a false clean bill of health.</td></tr>
+  <tr><td class="k">Phone as the senior&rsquo;s capture surface</td><td>Breaks the no-login lock. Piloting there measures the wrong product, and a failed pilot with a government funder is close to unrecoverable.</td></tr>
+  <tr><td class="k">Two capture surfaces for the senior</td><td>Drift between devices manufactures phantom decline &mdash; volume collapsing on one reads as disengagement.</td></tr>
+  <tr><td class="k">Genetics in v1</td><td>Maximally sensitive, needs counselling, carries implications for her children she cannot consent away &mdash; and says nothing about whether something changed this month.</td></tr>
+</table>
+</div>
+
+<h3 class="sec">Weak points that survived scrutiny</h3>
+<p class="lead">These are not solved. They are known, which is a different and better thing.</p>
+<div class="grid">
+  <div class="card weak"><h4>Retention is unproven</h4><p>The whole system is downstream of her using it, unprompted, for months. Genuinely unsettled &mdash; deployment evidence points both ways. Verify it; do not assert it.</p></div>
+  <div class="card weak"><h4>Cross-person prioritisation</h4><p>Cheap triage plus an urgent lane only partly answers the care worker&rsquo;s stated pain. A funder would still push on it.</p></div>
+  <div class="card weak"><h4>No true baseline at enrolment</h4><p>The population is already subtly declining by targeting premise, so day one records an already-compromised floor and calls it normal.</p></div>
+  <div class="card weak"><h4>The procurement clock</h4><p>Community care is the right channel and a possibly fatal timeline. Nothing in the design shortens it.</p></div>
+  <div class="card weak"><h4>Pitch discipline</h4><p>Intended purpose can be established in a sales meeting. The staged product only protects you if the pitch is staged too &mdash; the likeliest place this plan breaks.</p></div>
+  <div class="card weak"><h4>Device and connectivity &mdash; parked</h4><p>Cellular versus wifi, and the per-unit cost answer. A dark unit in a flat nobody visits goes unnoticed for weeks. Needs a heartbeat either way: silence is only clinical data if liveness is known.</p></div>
+</div>
+
+<h3 class="sec">Who pressure-tested it</h3>
+<p class="lead">Nine standing personas from the roster, and ten voices generated for this session.</p>
+<div class="cast">
+  <div class="p"><span class="ico">&#128207;</span><div><b>Level</b><span class="role">Claim Checker &middot; roster</span><span class="said">Kept the uncertainty explicit &mdash; including the admission that neither of us knows the regulation well enough to design around it.</span></div></div>
+  <div class="p"><span class="ico">&#127183;</span><div><b>Wildcard</b><span class="role">Option Generator &middot; roster</span><span class="said">Split &ldquo;conversation&rdquo; into how she speaks and what she says &mdash; then flipped cheap biomarkers from a threat into the reason the product exists.</span></div></div>
+  <div class="p"><span class="ico">&#129717;</span><div><b>Splinter</b><span class="role">Consensus Challenger &middot; roster</span><span class="said">Caught a reversed decision mid-sentence, and the ranking still being made silently after the display was removed.</span></div></div>
+  <div class="p"><span class="ico">&#127798;</span><div><b>Boundary</b><span class="role">Edge-Case Hunter &middot; roster</span><span class="said">Walked the exact moment the flag fires and she says no.</span></div></div>
+  <div class="p"><span class="ico">&#128548;</span><div><b>Grumbal</b><span class="role">The Adversary &middot; roster</span><span class="said">&ldquo;Your success condition is a human shows up. Your retention strategy is a human doesn&rsquo;t have to.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#127919;</span><div><b>Yui</b><span class="role">The Craftsman &middot; roster</span><span class="said">Took the boring metric because it was the only one that wasn&rsquo;t two contradictory things. Killed the word &ldquo;Stable&rdquo;.</span></div></div>
+  <div class="p"><span class="ico">&#128674;</span><div><b>Dana</b><span class="role">The Pragmatist &middot; roster</span><span class="said">&ldquo;You have four branches on what happens when the flag fires and nothing on the ninety days of nothing first.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#128721;</span><div><b>Killjoy</b><span class="role">Loop Stopper &middot; roster</span><span class="said">Stopped the design work to ask who was actually going to be standing in her living room.</span></div></div>
+  <div class="p"><span class="ico">&#128274;</span><div><b>Vex</b><span class="role">Security Engineer &middot; roster</span><span class="said">Traced the data to the year the consent turns out not to cover what it is being used for.</span></div></div>
+  <div class="p"><span class="ico">&#128117;</span><div><b>Madam Tan Guek Choo, 78</b><span class="role">the senior &middot; generated</span><span class="said">&ldquo;If I know it always listening, I won&rsquo;t talk. I&rsquo;ll go to the void deck.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#128104;&#8205;&#128188;</span><div><b>Chen Wei Jie, 46</b><span class="role">her son, in Shanghai &middot; generated</span><span class="said">&ldquo;The guilt is what makes me pick up the phone on a bad week. You&rsquo;d be taking the guilt away.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#128105;&#8205;&#9877;&#65039;</span><div><b>Nurse Rahayu binte Osman</b><span class="role">community care, 90 seniors &middot; generated</span><span class="said">&ldquo;A flag costs me a home visit. A flag with its evidence costs me two minutes.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#129504;</span><div><b>Priya Nair, 61</b><span class="role">young-onset Alzheimer&rsquo;s &middot; generated</span><span class="said">Named anosognosia &mdash; the word missing from the document &mdash; then refused to be solved by going behind her back.</span></div></div>
+  <div class="p"><span class="ico">&#129658;</span><div><b>Dr. Serene Koh</b><span class="role">memory clinic geriatrician &middot; generated</span><span class="said">&ldquo;&lsquo;Her sentences got shorter&rsquo; &mdash; there is no pathway that consumes that. I would start from zero.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#129514;</span><div><b>Dr. Aravind Menon</b><span class="role">clinical neuropsychologist &middot; generated</span><span class="said">Practice effects run toward false reassurance &mdash; the dashboard reads calm exactly while decline is being masked.</span></div></div>
+  <div class="p"><span class="ico">&#128241;</span><div><b>Marcus Leong</b><span class="role">elder-tech pilot lead &middot; generated</span><span class="said">&ldquo;Companionship is not a feature. The units that survived were doing a job.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#127963;&#65039;</span><div><b>Farah Ismail</b><span class="role">agency programme lead &middot; generated</span><span class="said">&ldquo;You haven&rsquo;t solved her problem. You&rsquo;ve given her a longer list of things she is now negligent for not doing.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#128295;</span><div><b>Tan Su Yin</b><span class="role">hardware logistics &middot; generated</span><span class="said">&ldquo;The son changed the broadband plan. The unit sat dark for eleven weeks and nobody noticed.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#9878;&#65039;</span><div><b>Priscilla Ong</b><span class="role">regulatory affairs &middot; generated</span><span class="said">&ldquo;A regulator reads what the product is for, not what the UI says.&rdquo;</span></div></div>
+  <div class="p"><span class="ico">&#128300;</span><div><b>Dr. Hui Ling Ang</b><span class="role">biomarker researcher &middot; generated</span><span class="said">&ldquo;Cheap tests don&rsquo;t weaken your thesis. They sharpen it into the only question left: who to send.&rdquo;</span></div></div>
+</div>
+
+<footer>
+  memlog &nbsp;&nbsp;&nbsp;docs/forge/cognitive-change-companion/.memlog.md<br>
+  distilled docs/forge/cognitive-change-companion/forged-idea.md<br>
+  report &nbsp;&nbsp;&nbsp;docs/forge/cognitive-change-companion/forge-report.html<br>
+  status &nbsp;&nbsp;&nbsp;complete &middot; hardened
+</footer>
+
+</div>
+</body>
+</html>

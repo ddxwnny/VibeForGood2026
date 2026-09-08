@@ -1,0 +1,443 @@
+<title>Forged: Cognitive-Change Companion</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#eaeff4;
+    --surface:#f7fafc;
+    --ink:#11202b;
+    --ink-soft:#4c5f6d;
+    --ink-faint:#7a8b98;
+    --rule:#c6d2dc;
+    --rule-soft:#dbe3ea;
+    --accent:#1f5f8b;
+    --seal:#9c2b24;
+    --seal-soft:rgba(156,43,36,.10);
+    --lock:#2f6b4f;
+    --open:#8a5e0c;
+    --shadow:0 1px 2px rgba(17,32,43,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0e1920;
+      --surface:#16232c;
+      --ink:#dde6ec;
+      --ink-soft:#93a6b3;
+      --ink-faint:#6c8090;
+      --rule:#2a3d4a;
+      --rule-soft:#1f2f3a;
+      --accent:#74b6de;
+      --seal:#d9615a;
+      --seal-soft:rgba(217,97,90,.12);
+      --lock:#71b18c;
+      --open:#d6a84e;
+      --shadow:0 1px 2px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e1920;
+    --surface:#16232c;
+    --ink:#dde6ec;
+    --ink-soft:#93a6b3;
+    --ink-faint:#6c8090;
+    --rule:#2a3d4a;
+    --rule-soft:#1f2f3a;
+    --accent:#74b6de;
+    --seal:#d9615a;
+    --seal-soft:rgba(217,97,90,.12);
+    --lock:#71b18c;
+    --open:#d6a84e;
+    --shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font:400 16px/1.6 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sheet{
+    max-width:980px;margin:0 auto;padding:0 24px 96px;
+  }
+  .lbl{
+    font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  }
+
+  /* ---- record header ---- */
+  .masthead{padding:44px 0 28px;border-bottom:2px solid var(--ink)}
+  .masthead .lbl{color:var(--accent)}
+  h1{
+    font:600 clamp(30px,4.6vw,46px)/1.08 Newsreader,Georgia,serif;
+    margin:14px 0 12px;letter-spacing:-.015em;text-wrap:balance;
+  }
+  .standfirst{
+    font:400 18px/1.55 Newsreader,Georgia,serif;color:var(--ink-soft);
+    max-width:60ch;margin:0;
+  }
+  .fields{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:2px 28px;margin-top:26px;
+  }
+  .field{padding:8px 0;border-top:1px solid var(--rule-soft)}
+  .field .v{
+    font:500 13px/1.5 "IBM Plex Mono",ui-monospace,monospace;
+    color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums;
+  }
+
+  /* ---- disposition ---- */
+  .disposition{
+    display:flex;gap:36px;align-items:center;flex-wrap:wrap;
+    padding:30px 0 34px;border-bottom:1px solid var(--rule);
+  }
+  .stamp{flex:0 0 auto;transform:rotate(-6.5deg)}
+  .disposition .body{flex:1 1 340px;min-width:280px}
+  .disposition h2{
+    font:600 21px/1.3 Newsreader,Georgia,serif;margin:10px 0 10px;
+  }
+  .disposition p{margin:0;color:var(--ink-soft);font-size:15.5px;max-width:58ch}
+  .disposition b{color:var(--ink);font-weight:600}
+
+  /* ---- sections ---- */
+  section{padding-top:52px}
+  .sechead{display:flex;align-items:baseline;gap:14px;
+    padding-bottom:10px;border-bottom:1px solid var(--rule)}
+  .sechead h3{font:600 22px/1.2 Newsreader,Georgia,serif;margin:0}
+  .sechead .count{margin-left:auto}
+  .note{color:var(--ink-soft);font-size:15px;max-width:64ch;margin:16px 0 0}
+
+  /* ---- findings: the three shifts ---- */
+  .shifts{display:grid;gap:0;margin-top:8px}
+  .shift{
+    display:grid;grid-template-columns:minmax(0,1fr);gap:6px;
+    padding:22px 0;border-bottom:1px solid var(--rule-soft);
+  }
+  @media(min-width:760px){
+    .shift{grid-template-columns:280px minmax(0,1fr);gap:8px 36px;align-items:start}
+  }
+  .shift h4{
+    font:600 17px/1.3 Newsreader,Georgia,serif;margin:0;color:var(--accent);
+  }
+  .shift p{margin:0;font-size:15px}
+  .shift .why{margin-top:8px;color:var(--ink-soft);font-size:14px;
+    font-family:Newsreader,Georgia,serif;font-style:italic;line-height:1.55}
+
+  /* ---- ledger rows (locks + open) ---- */
+  .group{margin-top:30px}
+  .group > .lbl{display:block;padding-bottom:8px;color:var(--accent)}
+  .row{
+    display:grid;grid-template-columns:14px minmax(0,1fr);gap:0 14px;
+    padding:13px 0;border-top:1px solid var(--rule-soft);align-items:start;
+  }
+  .row .pip{margin-top:7px;width:8px;height:8px;border-radius:1px;background:var(--lock)}
+  .row.open .pip{background:var(--open);border-radius:50%}
+  .row h4{font:600 15.5px/1.45 "IBM Plex Sans",system-ui,sans-serif;margin:0}
+  .row p{margin:3px 0 0;font-size:14.5px;color:var(--ink-soft)}
+  .row .why{display:block;margin-top:5px;font-family:Newsreader,Georgia,serif;
+    font-style:italic;font-size:14px;color:var(--ink-faint)}
+
+  /* ---- rejected table ---- */
+  .scroll{overflow-x:auto;margin-top:18px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+  th{
+    text-align:left;padding:0 20px 9px 0;border-bottom:1px solid var(--rule);
+    font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  }
+  td{padding:13px 20px 13px 0;border-bottom:1px solid var(--rule-soft);
+    vertical-align:top;color:var(--ink-soft)}
+  td.k{color:var(--ink);width:36%;font-weight:500}
+  tr td:last-child,tr th:last-child{padding-right:0}
+
+  /* ---- cast ---- */
+  .cast{display:grid;gap:0;margin-top:6px}
+  @media(min-width:820px){.cast{grid-template-columns:1fr 1fr;column-gap:44px}}
+  .voice{padding:14px 0;border-top:1px solid var(--rule-soft)}
+  .voice .who{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .voice .nm{font-weight:600;font-size:15px}
+  .voice .rl{font:500 10.5px/1.4 "IBM Plex Mono",ui-monospace,monospace;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .voice q{display:block;margin-top:6px;font-family:Newsreader,Georgia,serif;
+    font-size:14.5px;line-height:1.55;color:var(--ink-soft);quotes:"\201C" "\201D"}
+  .voice .ic{font-size:15px}
+
+  footer{
+    margin-top:64px;padding-top:20px;border-top:2px solid var(--ink);
+    font:400 12.5px/1.9 "IBM Plex Mono",ui-monospace,monospace;color:var(--ink-faint);
+  }
+  footer span{color:var(--ink-soft)}
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="lbl">BMad Forge &middot; Session Record</div>
+    <h1>Forged: Cognitive-Change Companion</h1>
+    <p class="standfirst">A voice companion for seniors living alone that does a real job &mdash; and lets the people around them notice, honestly, when something has changed.</p>
+    <div class="fields">
+      <div class="field"><div class="lbl">Source</div><div class="v">VibeForGood.md</div></div>
+      <div class="field"><div class="lbl">Brief</div><div class="v">ACE Challenge 2</div></div>
+      <div class="field"><div class="lbl">Session goal</div><div class="v">Make it better</div></div>
+      <div class="field"><div class="lbl">Target context</div><div class="v">SG deployment</div></div>
+      <div class="field"><div class="lbl">Branches worked</div><div class="v">10</div></div>
+      <div class="field"><div class="lbl">Date</div><div class="v">2026-09-08</div></div>
+    </div>
+  </header>
+
+  <div class="disposition">
+    <svg class="stamp" width="168" height="168" viewBox="0 0 200 200" role="img" aria-label="Stamped: hardened">
+      <defs>
+        <filter id="inkbleed">
+          <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+        </filter>
+        <path id="arcT" d="M 100,100 m -71,0 a 71,71 0 0 1 142,0" fill="none"/>
+        <path id="arcB" d="M 100,100 m 66,0 a 66,66 0 0 1 -132,0" fill="none"/>
+      </defs>
+      <g filter="url(#inkbleed)" fill="none" stroke="var(--seal)" opacity=".92">
+        <circle cx="100" cy="100" r="88" stroke-width="4.5"/>
+        <circle cx="100" cy="100" r="79" stroke-width="1.4"/>
+        <line x1="34" y1="112" x2="166" y2="112" stroke-width="1.4"/>
+      </g>
+      <g fill="var(--seal)" opacity=".95" font-family="'IBM Plex Mono',ui-monospace,monospace">
+        <text font-size="10.5" font-weight="500" letter-spacing="4.6">
+          <textPath href="#arcT" startOffset="50%" text-anchor="middle">PRESSURE-TESTED</textPath>
+        </text>
+        <text font-size="9" font-weight="400" letter-spacing="3.6">
+          <textPath href="#arcB" startOffset="50%" text-anchor="middle">10 BRANCHES &middot; 22 LOCKS</textPath>
+        </text>
+      </g>
+      <text x="100" y="100" text-anchor="middle" fill="var(--seal)" opacity=".95"
+            font-family="'IBM Plex Sans',system-ui,sans-serif" font-size="25"
+            font-weight="600" letter-spacing="1.6">HARDENED</text>
+      <text x="100" y="130" text-anchor="middle" fill="var(--seal)" opacity=".9"
+            font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="10"
+            letter-spacing="2.4">2026-09-08</text>
+    </svg>
+    <div class="body">
+      <div class="lbl">Disposition</div>
+      <h2>Survived &mdash; but not in the shape it arrived in</h2>
+      <p>Two contradictions inside the source document were found and resolved, one symptom the entire consent model had ignored was named, and the product&rsquo;s centre of gravity moved from a companion that measures speech to a <b>utility whose usage data is the clinical signal</b>. It is now specific enough to build, cost and defend &mdash; with six weak points that are known rather than hidden.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="sechead"><h3>What moved</h3><span class="lbl count">3 shifts</span></div>
+    <p class="note">Almost everything else in this record follows from these three.</p>
+    <div class="shifts">
+      <div class="shift">
+        <h4>From speech analysis to function</h4>
+        <div>
+          <p>The signal is what she <em>does</em>, not how she talks. Missed appointments, letters she can&rsquo;t handle, routines that stop.</p>
+          <span class="why">Task completion has no practice effect, and IADL decline is already clinically legible. The engagement metric and the health metric became the same quantity.</span>
+        </div>
+      </div>
+      <div class="shift">
+        <h4>From consent-at-the-flag to a Ulysses contract</h4>
+        <div>
+          <p>She names who gets told, and whether she is told first, at onboarding &mdash; while clearly able. The system later executes that instruction rather than negotiating.</p>
+          <span class="why">Anosognosia. Loss of insight is a symptom of what is being detected, so asking permission at flag time asks the exact faculty under measurement.</span>
+        </div>
+      </div>
+      <div class="shift">
+        <h4>From a warning light to a connection surface</h4>
+        <div>
+          <p>The family opens a weekly window into her life. The safety layer rides inside a channel they already read.</p>
+          <span class="why">A dashboard whose only states are &ldquo;nothing&rdquo; and &ldquo;bad news&rdquo; is a dread notification. The flag would have arrived on a dead channel.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h3>Locked</h3><span class="lbl count">Settled &mdash; not to be reopened</span></div>
+
+    <div class="group">
+      <span class="lbl">Sensing</span>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Addressed-only capture</h4>
+        <p>No ambient listening. No login ritual, but it wakes only when she speaks to it.</p>
+        <span class="why">Removes third-party consent and speaker-attribution corruption in one move.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Instruments stay, delivered voice-native</h4>
+        <p>Five-word recall, animal fluency, orientation, digits backwards &mdash; spoken, not tapped.</p>
+        <span class="why">The MoCA family was designed to be administered aloud. Conversation is their original form, not a disguise.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Two-speed engine</h4>
+        <p>Sharp drop over days &rarr; possible delirium: urgent and reversible. Slow drift over months &rarr; the dementia pathway. Drop with mood, sleep and appetite change &rarr; depression.</p>
+        <span class="why">Turned the largest confound into the strongest near-term clinical win.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Rotate item banks, space administration</h4>
+        <p>Never the same five words twice.</p>
+        <span class="why">Practice effects run toward false reassurance &mdash; the dashboard reads calm exactly while decline is masked.</span>
+      </div></div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">Consent</span>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Consent taken at onboarding, executed at the flag</h4>
+        <p>Recorded in her own voice, with the named recipient physically co-signing. No veto later, because the instruction was hers.</p>
+        <span class="why">Mirrors the Advance Care Planning and Lasting Power of Attorney logic Singapore already trusts.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Nothing hidden from her</h4>
+        <p>She hears weekly what the family sees. No reveal, because no secret.</p>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Research consent on day one</h4>
+        <p>Taken in the same sitting, in plain language. Retention, raw-audio disposal and internal access fixed at the same time.</p>
+        <span class="why">Retrofitting consent across a cohort of seniors a year later is not recoverable.</span>
+      </div></div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">What it optimises</span>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Task completion is the primary metric</h4>
+        <p>Medications taken, letters handled, appointments kept, routines held.</p>
+        <span class="why">The only option where the growth metric and the health metric are one number instead of two that fight.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Real human contact is a counter-metric with veto</h4>
+        <p>Time-with-AI rising while human contact falls is logged as a regression, even when tasks are up.</p>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Warmth is texture, not role</h4>
+        <p>Deep personalisation stays. The &ldquo;AI son&rdquo; framing goes.</p>
+      </div></div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">What people see</span>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Baseline period shows content, not a verdict</h4>
+        <p>Her week, plus one specific thing the family could ask her about. True on day 30 with no clinical claim attached.</p>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Never the word &ldquo;Stable&rdquo;</h4>
+        <p>Say &ldquo;nothing new noticed&rdquo; &mdash; what the system did, not what is true of her.</p>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Anything not fit for her to hear is not fit to send</h4>
+        <p>The weekly note is written in language she is comfortable hearing about herself.</p>
+      </div></div>
+    </div>
+
+    <div class="group">
+      <span class="lbl">Channel and posture</span>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Community care, not consumer</h4>
+        <p>The care worker enrols and co-signs on a visit that was happening anyway. The senior pays nothing.</p>
+        <span class="why">A consumer model reaches only seniors who already have engaged family &mdash; inverting the targeting.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Flags carry their evidence</h4>
+        <p>What changed, over what window, with dated instances. Plus a separate urgent lane for possible delirium.</p>
+        <span class="why">The care worker&rsquo;s cost was never the number of flags. It was the cost of each one.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Split product: observation ships, screening is regulated</h4>
+        <p>A record, never a judgement &mdash; and sorting counts as judgement.</p>
+        <span class="why">v1 makes no clinical claim, so its deployment is how v2&rsquo;s evidence gets made.</span>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Sold on the ageing-in-place budget line</h4>
+        <p>Same buyer, older and larger line, and it never requires saying &ldquo;dementia&rdquo;.</p>
+      </div></div>
+      <div class="row"><span class="pip"></span><div>
+        <h4>Error tuning per lane, by stigma cost</h4>
+        <p>Delirium: sensitive &mdash; a false alarm says &ldquo;check for an infection&rdquo;. Drift: specific, low-stakes wording, care worker only.</p>
+        <span class="why">Buys the right to be wrong often on one lane and rarely on the other.</span>
+      </div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h3>Rejected</h3><span class="lbl count">10 options</span></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Option</th><th>Reason it didn&rsquo;t survive</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Passive speech-acoustic analysis as the signal</td><td>Research-grade, no clinical pathway consumes it, and Singapore&rsquo;s dialect range and code-switching make the baseline unworkable.</td></tr>
+          <tr><td class="k">Ambient, always-on listening</td><td>Records non-consenting visitors, corrupts the baseline through speaker attribution, and contradicts the project&rsquo;s own stated ethics.</td></tr>
+          <tr><td class="k">Asking permission when the flag fires</td><td>Anosognosia. It fails hardest on precisely the people it was built for.</td></tr>
+          <tr><td class="k">Telling the family and not her</td><td>Rejected outright. Nothing about her is hidden from her.</td></tr>
+          <tr><td class="k">The &ldquo;AI son&rdquo;</td><td>Gives the real family permission to stay away, manufactures the social-withdrawal signal being measured, and reads as a verdict on her children.</td></tr>
+          <tr><td class="k">Engagement as the primary metric</td><td>Growth purchased in the currency of the product&rsquo;s own validity.</td></tr>
+          <tr><td class="k">A ranked caseload for the care worker</td><td>Cross-person severity cannot be defended, and a wrong ranking hands everyone below the fold a false clean bill of health.</td></tr>
+          <tr><td class="k">Phone as the senior&rsquo;s capture surface</td><td>Breaks the no-login lock. Piloting there measures the wrong product, and a failed pilot with a government funder is close to unrecoverable.</td></tr>
+          <tr><td class="k">Two capture surfaces for the senior</td><td>Drift between devices manufactures phantom decline &mdash; volume collapsing on one reads as disengagement.</td></tr>
+          <tr><td class="k">Genetics in v1</td><td>Maximally sensitive, needs counselling, carries implications for her children she cannot consent away &mdash; and says nothing about whether something changed this month.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h3>Still open</h3><span class="lbl count">6 weak points</span></div>
+    <p class="note">These are not solved. They are known, which is a different and better thing.</p>
+    <div class="group">
+      <div class="row open"><span class="pip"></span><div>
+        <h4>Retention is unproven</h4>
+        <p>The whole system is downstream of her using it, unprompted, for months. Deployment evidence points both ways. Verify it; do not assert it.</p>
+      </div></div>
+      <div class="row open"><span class="pip"></span><div>
+        <h4>Cross-person prioritisation</h4>
+        <p>Cheap triage plus an urgent lane only partly answers the care worker&rsquo;s stated pain. A funder would still push on it.</p>
+      </div></div>
+      <div class="row open"><span class="pip"></span><div>
+        <h4>No true baseline at enrolment</h4>
+        <p>The population is already subtly declining by targeting premise, so day one records an already-compromised floor and calls it normal.</p>
+      </div></div>
+      <div class="row open"><span class="pip"></span><div>
+        <h4>The procurement clock</h4>
+        <p>Community care is the right channel and a possibly fatal timeline. Nothing in the design shortens it.</p>
+      </div></div>
+      <div class="row open"><span class="pip"></span><div>
+        <h4>Pitch discipline</h4>
+        <p>Intended purpose can be established in a sales meeting. The staged product only protects you if the pitch is staged too &mdash; the likeliest place this plan breaks.</p>
+      </div></div>
+      <div class="row open"><span class="pip"></span><div>
+        <h4>Device and connectivity &mdash; parked mid-session</h4>
+        <p>Cellular versus wifi, and the per-unit cost answer. A dark unit in a flat nobody visits goes unnoticed for weeks. Needs a heartbeat either way: silence is only clinical data if liveness is known.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h3>Who pressure-tested it</h3><span class="lbl count">19 voices</span></div>
+    <p class="note">Nine standing personas from the roster; ten generated for this session.</p>
+    <div class="cast">
+      <div class="voice"><div class="who"><span class="ic">&#128207;</span><span class="nm">Level</span><span class="rl">Claim Checker &middot; roster</span></div><q>Kept the uncertainty explicit &mdash; including that neither of us knows the regulation well enough to design around it.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#127183;</span><span class="nm">Wildcard</span><span class="rl">Option Generator &middot; roster</span></div><q>Split &ldquo;conversation&rdquo; into how she speaks and what she says, then flipped cheap biomarkers from a threat into the reason the product exists.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#129717;</span><span class="nm">Splinter</span><span class="rl">Consensus Challenger &middot; roster</span></div><q>Caught a reversed decision mid-sentence, and the ranking still being made silently after the display was removed.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#127798;</span><span class="nm">Boundary</span><span class="rl">Edge-Case Hunter &middot; roster</span></div><q>Walked the exact moment the flag fires and she says no.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128548;</span><span class="nm">Grumbal</span><span class="rl">The Adversary &middot; roster</span></div><q>Your success condition is a human shows up. Your retention strategy is a human doesn&rsquo;t have to.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#127919;</span><span class="nm">Yui</span><span class="rl">The Craftsman &middot; roster</span></div><q>Took the boring metric because it was the only one that wasn&rsquo;t two contradictory things. Killed the word &ldquo;Stable&rdquo;.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128674;</span><span class="nm">Dana</span><span class="rl">The Pragmatist &middot; roster</span></div><q>You have four branches on what happens when the flag fires and nothing on the ninety days of nothing first.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128721;</span><span class="nm">Killjoy</span><span class="rl">Loop Stopper &middot; roster</span></div><q>Stopped the design work to ask who was actually going to be standing in her living room.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128274;</span><span class="nm">Vex</span><span class="rl">Security Engineer &middot; roster</span></div><q>Traced the data to the year the consent turns out not to cover what it is being used for.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128117;</span><span class="nm">Madam Tan Guek Choo, 78</span><span class="rl">the senior &middot; generated</span></div><q>If I know it always listening, I won&rsquo;t talk. I&rsquo;ll go to the void deck.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128104;&#8205;&#128188;</span><span class="nm">Chen Wei Jie, 46</span><span class="rl">her son, in Shanghai &middot; generated</span></div><q>The guilt is what makes me pick up the phone on a bad week. You&rsquo;d be taking the guilt away.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128105;&#8205;&#9877;&#65039;</span><span class="nm">Nurse Rahayu binte Osman</span><span class="rl">community care, 90 seniors &middot; generated</span></div><q>A flag costs me a home visit. A flag with its evidence costs me two minutes.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#129504;</span><span class="nm">Priya Nair, 61</span><span class="rl">young-onset Alzheimer&rsquo;s &middot; generated</span></div><q>Named anosognosia &mdash; the word missing from the document &mdash; then refused to be solved by going behind her back.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#129658;</span><span class="nm">Dr. Serene Koh</span><span class="rl">memory clinic geriatrician &middot; generated</span></div><q>&ldquo;Her sentences got shorter&rdquo; &mdash; there is no pathway that consumes that. I would start from zero.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#129514;</span><span class="nm">Dr. Aravind Menon</span><span class="rl">clinical neuropsychologist &middot; generated</span></div><q>Practice effects run toward false reassurance. The dashboard reads calm exactly while decline is being masked.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128241;</span><span class="nm">Marcus Leong</span><span class="rl">elder-tech pilot lead &middot; generated</span></div><q>Companionship is not a feature. The units that survived were doing a job.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#127963;&#65039;</span><span class="nm">Farah Ismail</span><span class="rl">agency programme lead &middot; generated</span></div><q>You haven&rsquo;t solved her problem. You&rsquo;ve given her a longer list of things she is now negligent for not doing.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128295;</span><span class="nm">Tan Su Yin</span><span class="rl">hardware logistics &middot; generated</span></div><q>The son changed the broadband plan. The unit sat dark for eleven weeks and nobody noticed.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#9878;&#65039;</span><span class="nm">Priscilla Ong</span><span class="rl">regulatory affairs &middot; generated</span></div><q>A regulator reads what the product is for, not what the UI says.</q></div>
+      <div class="voice"><div class="who"><span class="ic">&#128300;</span><span class="nm">Dr. Hui Ling Ang</span><span class="rl">biomarker researcher &middot; generated</span></div><q>Cheap tests don&rsquo;t weaken your thesis. They sharpen it into the only question left: who to send.</q></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>memlog</span> &nbsp; docs/forge/cognitive-change-companion/.memlog.md<br>
+    <span>distilled</span> &nbsp; docs/forge/cognitive-change-companion/forged-idea.md<br>
+    <span>status</span> &nbsp; complete &middot; hardened
+  </footer>
+
+</div>
