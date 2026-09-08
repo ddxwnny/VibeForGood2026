@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from edge.api.main import app
+from recollect.edge.api.main import app
 
 client = TestClient(app)
 

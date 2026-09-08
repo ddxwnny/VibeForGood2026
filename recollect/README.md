@@ -5,12 +5,12 @@ FastAPI backend, per the Architecture Spine (`regarding the app/architecture/arc
 ## Layout
 
 ```
-core/          domain entities, rules, ports — depends on nothing
-app/           use cases (enrol, ingest, compose weekly, read window)
-adapters/      postgres, LLM, STT/TTS, notify — depend on core
-edge/api/      FastAPI app + mock frontend (throwaway)
-edge/device/   Raspberry Pi agent (later)
-tests/         pytest, incl. architecture tests (AD-2 egress, AD-3 direction)
+src/recollect/core/      domain entities, rules, ports — depends on nothing
+src/recollect/app/       use cases (enrol, ingest, compose weekly, read window)
+src/recollect/adapters/  postgres, LLM, STT/TTS, notify — depend on core
+src/recollect/edge/api/  FastAPI app + mock frontend (throwaway)
+src/recollect/edge/device/  Raspberry Pi agent (later)
+tests/                   pytest, incl. architecture tests (AD-2 egress, AD-3 direction)
 ```
 
 ## Run
