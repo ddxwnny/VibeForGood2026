@@ -95,3 +95,23 @@ def test_all_abstract_methods_implemented_on_fake_log() -> None:
     }
     missing = abstract_methods - fake_methods
     assert not missing, f"FakeObservationLog is missing implementations: {missing}"
+
+
+def test_fake_audio_store_satisfies_audio_store_port() -> None:
+    from recollect.adapters.fake_audio_store import FakeAudioStore
+    from recollect.core.ports.audio_store_port import AudioStorePort
+
+    assert issubclass(FakeAudioStore, AudioStorePort)
+
+    import inspect
+    abstract_methods = {
+        name
+        for name, _ in inspect.getmembers(AudioStorePort, predicate=inspect.isfunction)
+        if getattr(getattr(AudioStorePort, name), "__isabstractmethod__", False)
+    }
+    fake_methods = {
+        name
+        for name, _ in inspect.getmembers(FakeAudioStore, predicate=inspect.isfunction)
+    }
+    missing = abstract_methods - fake_methods
+    assert not missing, f"FakeAudioStore is missing implementations: {missing}"
