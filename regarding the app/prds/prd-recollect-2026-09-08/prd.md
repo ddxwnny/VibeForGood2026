@@ -112,6 +112,7 @@ Downstream artifacts and readers must use these terms exactly; FRs, UJs, and SMs
 - **Conversation opener** — the one specific, dated thing the weekly window invites the family to ask about.
 - **Mention** — a mood, sleep, or appetite note the senior volunteers in conversation, recorded as an Observation.
 - **STT / TTS / LLM** — speech-to-text, text-to-speech, and the language model, respectively; the three named-processor classes.
+- **Conversational memory** — the device's retention of what the senior has said within and across interactions, used only for factual follow-up, never for comparison (AD-3).
 
 ## 4. Features
 
@@ -404,6 +405,60 @@ The roster renders in a fixed order that does not vary with any property of the 
 - The roster order is identical regardless of the content of any senior's functional series.
 - No element derived from the functional series (badge, sort, highlight, colour) appears in the view.
 
+### 4.11 Personalised, natural voice conversation
+
+**Description:** Recollect's voice is warm, personal, and conversational — because a senior who enjoys the exchange keeps using the device for her tasks, and the whole product depends on that use. The device remembers her name, her preferences, her routine, and the things she has mentioned, and it follows up naturally — while never presenting itself as a companion and never prolonging the exchange to hold her attention. Personalisation is a means to adoption, not a role; the bars below keep it from becoming a relationship. Realizes UJ-1, UJ-4. Governed by AD-8, AD-12.
+
+**Functional Requirements:**
+
+#### FR-30: The device personalises conversation with what it knows about the senior
+
+The device addresses the senior by name and weaves in her stated preferences, her routine, and her family — by role, never by name for anyone who did not consent — without ever implying it is a companion. Realizes UJ-1.
+
+**Consequences (testable):**
+- In a recorded session, the device uses the senior's name and at least one personalised reference drawn from her own prior statements.
+- The device never uses the name of a person who did not consent (AD-5 redaction).
+
+#### FR-31: The device converses in a natural, human-like register
+
+The device speaks in a warm, unhurried, conversational register in her language, and never reads as a scripted test, a checklist, or a survey. Realizes UJ-1.
+
+**Consequences (testable):**
+- The device does not repeat a question or prompt verbatim within a session; phrasing varies naturally.
+- Every ordinary turn complies with `communication-rules.md` (plain language, no clinical vocabulary, no score).
+
+#### FR-32: The device remembers and follows up
+
+The device retains conversational memory of what the senior has said within and across interactions, and follows up naturally in later conversation — recalling a specific prior fact, never a trend or comparison. Realizes UJ-1, UJ-3.
+
+**Consequences (testable):**
+- Having recorded a mail task on Wednesday, the device can ask on Saturday "how did the letter go?" without re-asking what the letter was.
+- No follow-up references any entry in a comparative or aggregating way (AD-3); it recalls facts, never trends.
+
+#### FR-33: The device is summoned, not summoning
+
+The device initiates conversation only for task reminders, appointments, and its weekly disclosure on request; it never reaches out to fill silence, solicit attention, or check in unprompted. Realizes UJ-1.
+
+**Consequences (testable):**
+- Outside a scheduled reminder, an appointment, or an explicit request, the device produces no unsolicited spoken output.
+- During a day with no task events and no addressed turns, the device stays silent.
+
+#### FR-34: The device never presents itself as a companion
+
+The device never describes itself as a friend, family, or companion, never encourages the senior to prefer it to human contact, and never uses language that implies a relationship. Realizes UJ-1, UJ-4.
+
+**Consequences (testable):**
+- No device utterance contains or implies "friend," "companion," "family," or any relational self-description.
+- Asked "are you my friend?", the device answers truthfully that it is a helper, in line with `communication-rules.md`'s honesty rule.
+
+#### FR-35: The device bounds the conversation
+
+The device does not prolong a conversation beyond the task at hand or the senior's lead, and does not optimise for talk-time. Realizes UJ-1.
+
+**Consequences (testable):**
+- After a task completes, the device opens no new topic and adds no filler unless the senior initiates.
+- A test that a completed task produces no follow-up prompts passes.
+
 ## 5. Non-Goals (Explicit)
 
 v1 is not, and will not be, any of the following:
@@ -416,6 +471,7 @@ v1 is not, and will not be, any of the following:
 - **A consumer or direct-to-family product** — systematically reaches only seniors who already have engaged family, inverting the targeting.
 - **A companionship product ("AI son")** — gives the real family permission to stay away, manufactures the withdrawal signal being measured, and lands badly against filial piety. Warmth is the texture of delivery, not the job.
 - **The phone as the senior's surface** — breaks the no-login constraint; piloting there measures the wrong product.
+- **Engagement as a success metric** — growth bought in the currency of the product's own validity. Recollect is engaging *enough* to win weekly use, never engaging as an end in itself.
 
 ## 6. MVP Scope
 
@@ -431,6 +487,7 @@ v1 is not, and will not be, any of the following:
 - Device liveness (FR-24..25)
 - Data lifecycle with audio discard and crypto-shred erasure (FR-26..27)
 - Care-worker roster (FR-28..29)
+- Personalised, natural voice conversation with over-reliance bars (FR-30..35)
 
 ### 6.2 Out of Scope for MVP
 
@@ -461,9 +518,10 @@ Metrics are computed at cohort level (AD-3 carve-out): never per named senior, n
 
 **Counter-metrics (do not optimize)**
 
-- **SM-C1**: Real human contact — must not fall. Measured at programme level via the care organisation's contact record, not via device telemetry. This is a veto: AI talk-time rising while human contact falls is logged as a regression even when task completion rises. Counterbalances SM-1.
+- **SM-C1**: Real human contact — must not fall below its enrolment baseline. Measured at programme level via the care organisation's contact record, not via device telemetry. This is a veto: AI talk-time rising while human contact falls is logged as a regression even when task completion rises. Counterbalances SM-1.
 - **SM-C2**: Time-talking-to-AI — a diagnostic, never a target. It must never be optimised upward. Counterbalances SM-1.
 - **SM-C3**: Engagement / DAU-style growth — not a target. Growth bought in the currency of the product's own validity is a regression.
+- **SM-C4 (bar)**: Conversational share — AI talk-time must never exceed a senior's recorded human contact in any week. If AI talk-time becomes her dominant interaction, that is a programme-level over-reliance regression, independent of task completion. Counterbalances SM-1, SM-2.
 
 ## 8. Open Questions
 
