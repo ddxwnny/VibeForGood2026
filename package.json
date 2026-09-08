@@ -1,0 +1,12 @@
+{
+  "name": "vibe-for-good-2026",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node --watch backend/server.js",
+    "start": "node backend/server.js",
+    "check": "node --check backend/server.js && node --check frontend/app.js"
+  }
+}
