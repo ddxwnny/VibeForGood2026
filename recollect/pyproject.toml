@@ -8,6 +8,7 @@ dependencies = [
     "alembic==1.19.2",
     "asyncpg==0.31.0",
     "fastapi==0.141.1",
+    "httpx>=0.27",
     "pydantic-settings>=2.0",
     "sqlalchemy==2.0.52",
     "uvicorn[standard]>=0.30",
@@ -16,8 +17,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "aiosqlite>=0.21",
     "hatchling>=1.32.0",
-    "httpx>=0.27",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
 ]
