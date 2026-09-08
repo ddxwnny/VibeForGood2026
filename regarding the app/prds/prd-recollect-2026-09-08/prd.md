@@ -1,8 +1,8 @@
 ---
 title: Recollect — v1 Observation Layer
-status: draft
+status: final
 created: 2026-09-08
-updated: 2026-09-08
+updated: 2026-09-09
 ---
 
 # PRD: Recollect — v1 Observation Layer
@@ -27,7 +27,7 @@ Cheap blood-based biomarkers do not make this redundant — they make it necessa
 - **Senior (emotional/social):** stay known. Know that her daughter is being told what she's been doing, that nothing about her is held back from her. Continuous disclosure is the dignity contract.
 - **Care worker:** enrol a senior in one ordinary home visit, and later see — without a home visit — that the devices she enrolled are alive, whose consent is in order, and what any senior's week held when a family member asks.
 - **Named recipient (family):** stay connected to a parent who lives alone, with something concrete to ask about each week, without having to interpret a verdict or a score.
-- **Community care organisation (buyer):** hold a dated, per-senior functional record that a regulator could later accept as the evidence base for a screening layer — bought on the ageing-in-place budget line, not the dementia line.
+- **Community care organisation (buyer):** hold a dated, per-senior functional record that a regulator could later accept as the evidence base for a screening layer — bought on the ageing-in-place budget line, not the dementia line. [ASSUMPTION: the buyer and operator is a Singapore community care organisation with existing home-visit routines and an ageing-in-place budget line.]
 
 ### 2.2 Non-Users (v1)
 
@@ -106,6 +106,12 @@ Downstream artifacts and readers must use these terms exactly; FRs, UJs, and SMs
 - **Device** — the dedicated always-powered speaker in the home; the senior's only capture surface.
 - **Roster** — the care worker's fixed-order view of enrolled seniors, their liveness, and consent status.
 - **Liveness** — whether the device is reachable/heartbeating; distinct from interaction.
+- **Grant** — the scoped access relationship a family member or care worker holds against a senior (role, scope, and the consent clause authorising it).
+- **Heartbeat** — the device's periodic liveness signal.
+- **Crypto-shred** — erasure by destroying the per-senior encryption key (AD-13), making stored content unrecoverable.
+- **Conversation opener** — the one specific, dated thing the weekly window invites the family to ask about.
+- **Mention** — a mood, sleep, or appetite note the senior volunteers in conversation, recorded as an Observation.
+- **STT / TTS / LLM** — speech-to-text, text-to-speech, and the language model, respectively; the three named-processor classes.
 
 ## 4. Features
 
@@ -113,7 +119,7 @@ Each feature groups the FRs that realise one capability. FRs are numbered global
 
 ### 4.1 Addressed-only voice interaction
 
-**Description:** The senior speaks to the device and it responds, with no login, account, or app to open. The device captures and analyses only speech addressed to it; background audio (TV, a visiting helper, a phone call in the room) is neither stored nor transcribed. This is the first of the two structural guarantees the product sells, and it must be structural, not a convention. Realizes UJ-1, UJ-4. Governed by AD-2, AD-5, AD-14, AD-16.
+**Description:** The senior speaks to the device and it responds, with no login, account, or app to open. The device captures and analyses only speech addressed to it; background audio (TV, a visiting helper, a phone call in the room) is neither stored nor transcribed. This is the first of the two structural guarantees the product sells, and it must be structural, not a convention. Realizes UJ-1, UJ-4. Governed by AD-2, AD-5, AD-14, AD-16. [ASSUMPTION: the senior's capture surface is a single dedicated always-powered speaker, procured and installed by the community care organisation.]
 
 **Functional Requirements:**
 
@@ -224,7 +230,7 @@ The senior is never told she passed, failed, or scored; a refused or deflected i
 
 ### 4.4 Longitudinal functional record
 
-**Description:** The system maintains, per senior, a dated series of task completions, instrument responses, and mood/sleep/appetite mentions, each linked to the interaction it came from. It is a record, never a judgement: no entry carries a score, level, ranking, or classification. Realizes UJ-1, UJ-3. Governed by AD-1, AD-3, AD-10, AD-11, AD-14, AD-15.
+**Description:** The system maintains, per senior, a dated series of task completions, instrument responses, and mood/sleep/appetite mentions, each linked to the interaction it came from. It is a record, never a judgement: no entry carries a score, level, ranking, or classification. Mood, sleep, and appetite are captured opportunistically — when the senior volunteers them in conversation — and are never solicited by a task or instrument. Realizes UJ-1, UJ-3. Governed by AD-1, AD-3, AD-10, AD-11, AD-14, AD-15.
 
 **Functional Requirements:**
 
@@ -234,6 +240,7 @@ The system maintains, per senior, a dated series of task completions, instrument
 
 **Consequences (testable):**
 - For any enrolled senior and date range, the system returns the series with every entry traceable to a dated, quotable interaction.
+- A volunteered mood, sleep, or appetite mention in conversation produces a dated Observation of type `mention`, linked to its interaction.
 
 #### FR-13: The record makes no judgement
 
@@ -252,7 +259,7 @@ Each Observation records the interaction it came from, its date, its signal type
 
 ### 4.5 Weekly family window
 
-**Description:** The named recipient receives a weekly account of the senior's week — what she did, what she handled, what she mentioned — plus one concrete thing to ask her about. It is a connection surface with a safety layer, not a warning light with a feed attached. Realizes UJ-3. Governed by AD-3, AD-8, AD-10.
+**Description:** The named recipient receives a weekly account of the senior's week — what she did, what she handled, what she mentioned — plus one concrete thing to ask her about. It is a connection surface with a safety layer, not a warning light with a feed attached. Realizes UJ-3. Governed by AD-3, AD-8, AD-10. [ASSUMPTION: a ~12-week baseline period is long enough to be useful downstream.]
 
 **Functional Requirements:**
 
@@ -261,7 +268,7 @@ Each Observation records the interaction it came from, its date, its signal type
 The named recipient receives, each week, an account of the senior's week plus one concrete conversation opener, containing at least one specific dated detail. Realizes UJ-3.
 
 **Consequences (testable):**
-- Twelve consecutive weekly windows are generated for a senior with no detected change; every one contains at least one specific dated detail.
+- Twelve consecutive weekly windows are generated for a senior across a 12-week period; every one contains at least one specific dated detail.
 
 #### FR-16: The window contains no verdict
 
@@ -308,7 +315,7 @@ The senior-facing disclosure is spoken only on her explicit request, and is deli
 
 ### 4.7 Care-worker-led enrolment
 
-**Description:** A community care worker enrols a senior during an ordinary home visit, capturing in one sitting her Ulysses instruction in her own voice, the named recipient's physical co-signature, separate research/validation consent, and the acknowledged processor disclosure — the four consent artefacts. Realizes UJ-2. Governed by AD-4, AD-7, AD-13, AD-16.
+**Description:** A community care worker enrols a senior during an ordinary home visit, capturing in one sitting her Ulysses instruction in her own voice, the named recipient's physical co-signature, separate research/validation consent, and the acknowledged processor disclosure — the four consent artefacts. Realizes UJ-2. Governed by AD-4, AD-7, AD-13, AD-16. [ASSUMPTION: the senior has capacity at enrolment to give the Ulysses instruction herself.]
 
 **Functional Requirements:**
 
@@ -433,27 +440,34 @@ v1 is not, and will not be, any of the following:
 - Genetics and biomarkers — out of scope entirely.
 - Consumer/family-direct distribution.
 
-[NOTE FOR PM: a hackathon deadline is days away, but the demo slice is a sprint-planning call, not a PRD reduction. This PRD stays at full v1 scope; which FRs ship in the demo is decided at `bmad-create-epics-and-stories`, not here.]
+[NOTE FOR PM: v1 ships in full — there is no demo-slice reduction of this PRD. Which FRs land in the first shippable increment is a `bmad-create-epics-and-stories` call, not a PRD concern.]
 
 ## 7. Success Metrics
 
+Metrics are computed at cohort level (AD-3 carve-out): never per named senior, never reachable from any human surface.
+
 **Primary**
 
-- **SM-1**: Task completion — each enrolled senior completes all four task classes through the device at least once within a two-week period, each completion recorded with date and outcome. Validates FR-4..7, FR-12.
+- **SM-1**: Task completion — across the enrolled cohort over the 12-week baseline, seniors complete all four task classes through the device at least once within any two-week window, each completion recorded with date and outcome. Validates FR-4..7, FR-12.
+- **SM-2**: Retention — the proportion of enrolled seniors still weekly-active at week 12. This is the SPEC's known failure mode (Open Question #6); it is the metric that determines whether the product actually holds onto its users. Validates FR-4..7, FR-12.
 
 **Secondary**
 
-- **SM-2**: Weekly window integrity — twelve consecutive weekly windows generated with no detected change, every one passing `communication-rules.md` and containing at least one specific dated detail. Validates FR-15, FR-16.
-- **SM-3**: Enrolment completeness — every active enrolment carries all four consent artefacts timestamped to the visit. Validates FR-21, FR-22.
-- **SM-4**: Liveness accuracy — every powered-off device reported unreachable within 24 hours, affected days excluded from the functional series. Validates FR-24, FR-25.
+- **SM-3**: Weekly window integrity — twelve consecutive weekly windows generated per senior, every one passing `communication-rules.md` and containing at least one specific dated detail. Validates FR-15, FR-16, FR-17.
+- **SM-4**: Enrolment completeness — every active enrolment carries all four consent artefacts timestamped to the visit. Validates FR-21, FR-22, FR-23.
+- **SM-5**: Liveness accuracy — every powered-off device reported unreachable within 24 hours, affected days excluded from the functional series. Validates FR-24, FR-25.
+- **SM-6**: Instrument integrity — across 12 weeks no instrument item recurs inside its refractory window, and three lay readers given full transcripts cannot identify instrument turns above chance. Validates FR-8, FR-9, FR-10, FR-11.
+- **SM-7**: Disclosure parity — every family window has a matching senior-facing disclosure logged in the same week. Validates FR-18, FR-19, FR-20.
 
 **Counter-metrics (do not optimize)**
 
-- **SM-C1**: Real human contact — must not fall. This is a veto: AI talk-time rising while human contact falls is logged as a regression even when task completion rises. Counterbalances SM-1.
+- **SM-C1**: Real human contact — must not fall. Measured at programme level via the care organisation's contact record, not via device telemetry. This is a veto: AI talk-time rising while human contact falls is logged as a regression even when task completion rises. Counterbalances SM-1.
 - **SM-C2**: Time-talking-to-AI — a diagnostic, never a target. It must never be optimised upward. Counterbalances SM-1.
 - **SM-C3**: Engagement / DAU-style growth — not a target. Growth bought in the currency of the product's own validity is a regression.
 
 ## 8. Open Questions
+
+Open Questions #1 and #3 are go/no-go gates — #1 must be answered before enrolment, #3 before speech-vendor selection. The rest are resolvable during build.
 
 1. **Does PDPA s16 override the Ulysses contract?** Singapore's PDPA gives a right to withdraw consent at any time, which a standing instruction taken at enrolment most likely cannot extinguish — directly against the locked "no veto at flag time." Needs Singapore legal advice, and blocks enrolment rather than build.
 2. **What HSA medical-device classification will the v2 screening layer fall under, and what PDPA controller/intermediary obligations attach to the community care organisation?**
@@ -468,10 +482,12 @@ v1 is not, and will not be, any of the following:
 
 ## 9. Assumptions Index
 
+Inline `[ASSUMPTION]` tags, surfaced for explicit confirmation:
+
+- **§2.1** — The buyer and operator is a Singapore community care organisation with existing home-visit routines and an ageing-in-place budget line.
+- **§4.1** — The senior's capture surface is a single dedicated always-powered speaker, procured and installed by the community care organisation.
 - **§4.3** — The 90-day refractory floor for recall items is the instrument-protocol default, not independently validated.
-- **§2.3 / §4.7** — The senior's surface is a dedicated always-powered voice speaker in the home, procured and installed by the community care organisation.
-- **§2.3 / §4.7** — The buyer and operator is a Singapore community care organisation with existing home-visit routines and an ageing-in-place budget line.
-- **§2.3 / §4.7** — The senior has capacity at enrolment to give the Ulysses instruction herself; the enrolment path assumes present capacity.
-- **§4.5 / §7** — A ~12-week baseline period is long enough to be useful downstream; carried forward from the forge session, not independently validated.
-- **§4.1** — Address detection is a purpose-built on-device component; the standard wake-word library (openWakeWord) does only wake-word spotting, not addressed-vs-overheard determination. Choice open.
-- **§4.1 / §4.2** — Voice is a three-stage pipeline (STT → LLM → TTS); Anthropic ships no speech or text-to-speech API. STT vendor is undecided pending a real-recordings bake-off; TTS is ElevenLabs.
+- **§4.5** — A ~12-week baseline period is long enough to be useful downstream.
+- **§4.7** — The senior has capacity at enrolment to give the Ulysses instruction herself.
+
+Carried from the Architecture Spine, not re-stated here: address detection is a purpose-built on-device component (choice still open); voice is a three-stage pipeline (STT → LLM → TTS) because Anthropic ships no speech or text-to-speech API (STT vendor undecided pending a real-recordings bake-off).
