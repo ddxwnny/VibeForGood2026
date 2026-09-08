@@ -139,11 +139,11 @@ Track: A (Bread04). A care worker enrols a senior in one visit, capturing the fo
 **FRs covered:** FR-21, FR-22, FR-23
 
 ### Epic 3: Roster and device liveness
-Track: A (Bread04). A care worker sees their seniors, liveness, and consent status in a fixed-order roster; dead devices and unrecognised turns never read as decline.
+Track: A (Yan Herng). A care worker sees their seniors, liveness, and consent status in a fixed-order roster; dead devices and unrecognised turns never read as decline.
 **FRs covered:** FR-24, FR-25, FR-28, FR-29
 
 ### Epic 4: Addressed-only voice and everyday tasks
-Track: B (Yan Herng). The senior talks to the device with no login, only addressed speech is captured, and she handles medication, appointments, mail, and routines.
+Track: B (Bread04). The senior talks to the device with no login, only addressed speech is captured, and she handles medication, appointments, mail, and routines.
 **FRs covered:** FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7
 
 ### Epic 5: Voice-native instrument delivery
@@ -247,9 +247,9 @@ So that the consent is defensible as her own statement.
 
 ## Epic 3: Roster and device liveness
 
-**Owner:** Bread04
+**Owner:** Yan Herng
 
-**Goal:** A care worker sees their seniors, liveness, and consent status in a fixed-order roster; dead devices and unrecognised turns never read as decline. *(Track A — Bread04.)*
+**Goal:** A care worker sees their seniors, liveness, and consent status in a fixed-order roster; dead devices and unrecognised turns never read as decline. *(Track A — Yan Herng.)*
 
 ### Story 3.1: Liveness heartbeat and unreachable detection
 
@@ -289,9 +289,9 @@ So that no concern level, score, badge, sort, or highlight derived from the seri
 
 ## Epic 4: Addressed-only voice and everyday tasks
 
-**Owner:** Yan Herng
+**Owner:** Bread04
 
-**Goal:** The senior talks to the device with no login, only addressed speech is captured, and she handles medication, appointments, mail, and routines. *(Track B — Yan Herng.)*
+**Goal:** The senior talks to the device with no login, only addressed speech is captured, and she handles medication, appointments, mail, and routines. *(Track B — Bread04.)*
 
 ### Story 4.1: Addressed-only capture with no login
 
