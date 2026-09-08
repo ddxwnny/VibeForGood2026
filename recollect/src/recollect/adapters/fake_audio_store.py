@@ -18,3 +18,8 @@ class FakeAudioStore(AudioStorePort):
 
     async def get_consent_audio(self, audio_ref: str) -> bytes:
         return self._store[audio_ref]
+
+    async def shred_senior(self, senior_id_str: str) -> None:
+        prefix = f"consent-audio/{senior_id_str}/"
+        for ref in [r for r in self._store if r.startswith(prefix)]:
+            del self._store[ref]

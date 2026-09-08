@@ -27,3 +27,11 @@ class AudioStorePort(ABC):
 
     @abstractmethod
     async def get_consent_audio(self, audio_ref: str) -> bytes: ...
+
+    @abstractmethod
+    async def shred_senior(self, senior_id_str: str) -> None:
+        """
+        Removes all consent audio for a senior. The erasure path reaches this
+        store on withdrawal or death (AD-13 reach: enrolment consent audio).
+        """
+        ...
