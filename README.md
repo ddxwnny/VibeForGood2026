@@ -56,3 +56,34 @@ automatically. Keep secrets in backend environment variables, never frontend cod
 
 This starter provides an API connection and static page. Add persistence,
 authentication, and application-specific features as your project needs them.
+
+## Working together (branch + PR convention)
+
+Two people work off `main` — never commit to it directly.
+
+1. Sync, then branch off `main` for each piece of work:
+
+   ```bash
+   git checkout main
+   git pull
+   git checkout -b <your-name>/<feature>   # e.g. braed/medication-endpoint
+   ```
+
+2. Commit as you go, then push and open a pull request:
+
+   ```bash
+   git push -u origin <your-name>/<feature>
+   ```
+
+3. The other person reviews the PR and merges it into `main`, then deletes the branch.
+
+4. Stay in sync — before starting work and before pushing:
+
+   ```bash
+   git pull origin main
+   git merge main        # or: git rebase main
+   ```
+
+The backend is a single `backend/server.js`. To avoid constant merge conflicts,
+split routes into their own modules (e.g. `backend/routes/medication.js`) and keep
+`server.js` a thin router. Each laptop runs `npm run dev` on its own machine.
