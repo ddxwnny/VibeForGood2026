@@ -38,3 +38,7 @@ class UnnamedProcessorError(RecollectError):
 
 class NonTaskSignalError(RecollectError):
     """Raised when record_task is asked to record a non-task signal type (FR-4..7)."""
+
+
+class AlreadyErasedError(RecollectError):
+    """Raised when erasing a senior who already has a tombstone (AD-13)."""

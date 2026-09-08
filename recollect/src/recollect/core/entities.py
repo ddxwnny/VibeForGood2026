@@ -55,6 +55,12 @@ class GapReason(str, Enum):
     UNRECOGNISED = "unrecognised"
 
 
+class ErasureReason(str, Enum):
+    """Reasons a senior's data is crypto-shredded (AD-13)."""
+    WITHDRAWAL = "withdrawal"
+    DEATH = "death"
+
+
 class ConsentArtifactKind(str, Enum):
     ULYSSES_INSTRUCTION = "ulysses_instruction"        # own-voice recording (FR-23)
     RECIPIENT_CO_SIGNATURE = "recipient_co_signature"  # named recipient co-signs
@@ -154,6 +160,20 @@ class Gap:
     reason: GapReason
     started_at: datetime    # UTC
     ended_at: datetime | None = None  # None = still open
+
+
+@dataclass(frozen=True)
+class Tombstone:
+    """
+    Appended on withdrawal or death (AD-13). The log structure survives; the
+    content becomes unrecoverable because the per-senior key is destroyed.
+    stores_shredded enumerates every store the erasure path reached.
+    """
+    id: UUID
+    senior_id: UUID
+    reason: ErasureReason
+    shredded_at: datetime                 # UTC
+    stores_shredded: frozenset[str] = field(default_factory=frozenset)
 
 
 @dataclass(frozen=True)

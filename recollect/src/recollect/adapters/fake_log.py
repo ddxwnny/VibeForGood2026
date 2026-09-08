@@ -7,6 +7,7 @@ catch violations even without a database.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
 from uuid import UUID
 
@@ -16,6 +17,7 @@ from recollect.core.entities import (
     Interaction,
     Observation,
     Senior,
+    Tombstone,
 )
 from recollect.core.errors import (
     DuplicateInteractionError,
@@ -35,6 +37,7 @@ class FakeObservationLog(ObservationLogPort):
         self._observations: list[Observation] = []      # append-only list
         self._observation_ids: set[UUID] = set()
         self._gaps: dict[UUID, Gap] = {}
+        self._tombstones: dict[UUID, Tombstone] = {}  # keyed by senior_id
 
     # ------------------------------------------------------------------
     # Senior / Enrolment
@@ -141,3 +144,19 @@ class FakeObservationLog(ObservationLogPort):
             started_at=existing.started_at,
             ended_at=ended_at,
         )
+
+    # ------------------------------------------------------------------
+    # Tombstone and collection stop (AD-13)
+    # ------------------------------------------------------------------
+
+    async def deactivate_enrolment(self, senior_id: UUID, at: datetime) -> None:
+        enrolment = self._enrolments.get(senior_id)
+        if enrolment is None:
+            return
+        self._enrolments[senior_id] = replace(enrolment, withdrawn_at=at)
+
+    async def append_tombstone(self, tombstone: Tombstone) -> None:
+        self._tombstones[tombstone.senior_id] = tombstone
+
+    async def get_tombstone(self, senior_id: UUID) -> Tombstone | None:
+        return self._tombstones.get(senior_id)

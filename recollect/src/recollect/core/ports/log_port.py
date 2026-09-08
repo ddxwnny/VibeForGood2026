@@ -15,6 +15,7 @@ from recollect.core.entities import (
     Interaction,
     Observation,
     Senior,
+    Tombstone,
 )
 
 
@@ -94,3 +95,29 @@ class ObservationLogPort(ABC):
 
     @abstractmethod
     async def close_gap(self, gap_id: UUID, ended_at: datetime) -> None: ...
+
+    # ------------------------------------------------------------------
+    # Tombstone and collection stop (erasure, AD-13)
+    # ------------------------------------------------------------------
+
+    @abstractmethod
+    async def deactivate_enrolment(self, senior_id: UUID, at: datetime) -> None:
+        """
+        Stops collection for a senior by marking their enrolment withdrawn as
+        of ``at``. Covers both withdrawal and death — once a senior is erased,
+        the write path (AD-4) rejects further observations.
+        """
+        ...
+
+    @abstractmethod
+    async def append_tombstone(self, tombstone: Tombstone) -> None:
+        """
+        Appends a Tombstone event. The log is append-only (AD-1); this records
+        the erasure without deleting anything. The content is unrecoverable
+        because the per-senior key has already been destroyed (AD-13).
+        """
+        ...
+
+    @abstractmethod
+    async def get_tombstone(self, senior_id: UUID) -> Tombstone | None:
+        """Returns the senior's Tombstone if one exists — verifies erasure."""
