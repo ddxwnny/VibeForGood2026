@@ -34,3 +34,7 @@ class ForbiddenComparisonError(RecollectError):
 
 class UnnamedProcessorError(RecollectError):
     """Raised when audio would egress to a processor not in the enrolment allowlist (AD-2, AD-16)."""
+
+
+class NonTaskSignalError(RecollectError):
+    """Raised when record_task is asked to record a non-task signal type (FR-4..7)."""
