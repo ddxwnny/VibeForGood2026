@@ -30,6 +30,7 @@ class SignalType(str, Enum):
     MAIL = "mail"
     ROUTINE = "routine"
     MEMORY = "memory"
+    PLACE_MEMORY = "place_memory"
     DATE_TIME = "date_time"
     LANGUAGE = "language"
     MISPLACING = "misplacing"
@@ -41,6 +42,7 @@ class SignalType(str, Enum):
     MOOD = "mood"
     SLEEP = "sleep"
     APPETITE = "appetite"
+    MENTION = "mention"
 
 
 class TaskOutcome(str, Enum):

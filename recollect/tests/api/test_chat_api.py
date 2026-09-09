@@ -14,7 +14,9 @@ from recollect.edge.api.state import AppState
 
 @pytest.fixture
 def client() -> TestClient:
-    app.state.settings = Settings(environment="dev")
+    from recollect.edge.api.middleware import _limiter
+    _limiter.reset()
+    app.state.settings = Settings(environment="dev", seed_demo_data=False)
     app.state.store = AppState()
     with TestClient(app) as c:
         yield c

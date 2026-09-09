@@ -21,7 +21,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from uuid_extensions import uuid7
 
 from recollect.app.capture_turn import CapturedTurn, capture_turn
@@ -133,7 +133,9 @@ class InstrumentDecisionOut(BaseModel):
 
 
 class EnrolmentBody(BaseModel):
-    display_name: str
+    model_config = ConfigDict(extra="forbid")
+
+    display_name: str = Field(min_length=1, max_length=50)
     preferred_language: str = "en-SG"
     visit_at: str | None = None
     recipient_co_signature: bool
@@ -143,31 +145,41 @@ class EnrolmentBody(BaseModel):
 
 
 class CaptureTurnBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     senior_id: UUID
     interaction_id: UUID = Field(description="Device-minted interaction id (AD-14).")
-    idempotency_key: str = Field(description="Device-minted idempotency key (AD-14).")
+    idempotency_key: str = Field(min_length=1, max_length=128, description="Device-minted idempotency key (AD-14).")
     occurred_at: str = Field(description="UTC ISO-8601, authoritative device clock (AD-14).")
-    transcript: str
+    transcript: str = Field(max_length=20_000)
 
 
 class ObservationBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     interaction_id: UUID = Field(default_factory=uuid7)
     signal_type: str
-    outcome: str
-    content: str
+    outcome: str | None = None
+    content: str = Field(max_length=4_000)
     occurred_at: str | None = None
 
 
 class EraseBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     reason: str
 
 
 class HeartbeatBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     senior_id: UUID
     at: str | None = None
 
 
 class InstrumentDecisionBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     senior_id: UUID
     interaction_id: UUID = Field(description="Device-minted interaction id (AD-14).")
     bank_name: str
@@ -177,10 +189,42 @@ class InstrumentDecisionBody(BaseModel):
 
 
 class ChatTurnBody(BaseModel):
-    message: str = ""
+    model_config = ConfigDict(extra="forbid")
+
+    message: str = Field(default="", max_length=4_000)
     audio_base64: str | None = None
     interaction_id: UUID | None = None
     idempotency_key: str | None = None
+    history: list[dict[str, str]] = Field(default_factory=list, description="Recent conversation turns for rolling memory (FR-32, FR-36)")
+
+
+class PlaceMemoryOut(BaseModel):
+    id: UUID
+    senior_id: UUID
+    title: str
+    description: str
+    image_url: str
+    personal_memory: str
+    recognition_keys: list[str] = []
+    prompt_question: str
+    recall_attempts: int = 0
+    recall_successes: int = 0
+    last_asked_at: str | None = None
+
+
+class PlaceMemoryListOut(BaseModel):
+    places: list[PlaceMemoryOut]
+
+
+class PlaceMemoryBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1, max_length=100)
+    description: str = Field(default="", max_length=2000)
+    image_url: str = Field(default="", max_length=500000)
+    personal_memory: str = Field(default="", max_length=2000)
+    recognition_keys: list[str] = Field(default_factory=list)
+    prompt_question: str = Field(default="", max_length=1000)
 
 
 class ChatTurnOut(BaseModel):
@@ -188,6 +232,7 @@ class ChatTurnOut(BaseModel):
     reply: str
     audio_base64: str | None = None
     observations_recorded: list[ObservationOut] = []
+    place_memory: PlaceMemoryOut | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -210,7 +255,10 @@ def _iso(dt: datetime) -> datetime:
 
 
 def _map_error(exc: Exception) -> HTTPException:
-    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+    # Legacy BC shim: domain errors are now rendered by the shared envelope
+    # handler (errors.py) with a stable machine-readable code. Re-raise so the
+    # typed handler produces { error: { code, message, details } }.
+    raise exc  # type: ignore[misc]
 
 
 # ---------------------------------------------------------------------------
@@ -343,19 +391,25 @@ async def record_observation(
 ) -> ObservationOut:
     store = _store(request)
     try:
-        signal_type = SignalType(body.signal_type)
-        outcome = TaskOutcome(body.outcome)
-        observation = await record_task(
-            TaskRecordRequest(
-                senior_id=senior_id,
+        signal_type = SignalType(body.signal_type.lower())
+        outcome = TaskOutcome(body.outcome.lower()) if body.outcome else None
+        occurred_at = _parse_utc(body.occurred_at) or _clock.utc_now()
+        
+        from recollect.app.append_observation import append_observation
+        from recollect.core.entities import Observation, Provenance
+        
+        observation = Observation(
+            id=uuid7(),
+            senior_id=senior_id,
+            provenance=Provenance(
                 interaction_id=body.interaction_id,
-                occurred_at=_parse_utc(body.occurred_at) or _clock.utc_now(),
+                occurred_at=occurred_at,
                 signal_type=signal_type,
-                outcome=outcome,
-                content=body.content,
             ),
-            log=store.log,
+            outcome=outcome,
+            content=body.content,
         )
+        await append_observation(observation, log=store.log)
     except RecollectError as exc:
         raise _map_error(exc)
     except ValueError as exc:
@@ -437,7 +491,7 @@ async def roster(request: Request, phone: PhoneDep) -> RosterOut:
 # ---------------------------------------------------------------------------
 
 
-@router.post("/seniors/{senior_id}/window", response_model=WeeklyWindowOut)
+@router.api_route("/seniors/{senior_id}/window", methods=["GET", "POST"], response_model=WeeklyWindowOut)
 async def weekly_window(
     senior_id: UUID,
     request: Request,
@@ -610,6 +664,12 @@ async def chat_with_senior(
     store = _store(request)
     senior = await store.log.get_senior(senior_id)
     if senior is None:
+        from recollect.edge.api.demo_seed import DEMO_ARUN_ID, DEMO_LILY_ID, seed_demo_seniors_if_empty
+        if senior_id in (DEMO_ARUN_ID, DEMO_LILY_ID):
+            await seed_demo_seniors_if_empty(store)
+            senior = await store.log.get_senior(senior_id)
+
+    if senior is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Senior {senior_id} has no active enrolment (AD-4).",
@@ -645,6 +705,7 @@ async def chat_with_senior(
         senior_id=str(senior.id),
         display_name=senior.display_name,
         preferred_language=senior.preferred_language,
+        recent_turns=body.history,
     )
 
     from recollect.app.chat_dialogue import process_chat_turn_async
@@ -658,29 +719,50 @@ async def chat_with_senior(
     interaction_id = body.interaction_id or uuid7()
     occurred_at = _clock.utc_now()
 
-    # Automatically record extracted everyday tasks
-    for sig, outcome, content in result.extracted_tasks:
-        obs = await record_task(
-            TaskRecordRequest(
-                senior_id=senior_id,
-                interaction_id=interaction_id,
-                occurred_at=occurred_at,
-                signal_type=sig,
-                outcome=outcome,
-                content=content,
-            ),
-            log=store.log,
-        )
-        recorded_out.append(
-            ObservationOut(
-                id=obs.id,
-                signal_type=obs.provenance.signal_type.value,
-                outcome=obs.outcome.value if obs.outcome else None,
-                content=obs.content,
-                occurred_at=_iso(obs.provenance.occurred_at),
-                supersedes_id=obs.supersedes_id,
+    # Automatically record extracted everyday tasks or conversational check-in
+    if result.extracted_tasks:
+        from recollect.app.record_task import TASK_SIGNAL_TYPES
+        from recollect.app.append_observation import append_observation
+        from recollect.core.entities import Observation, Provenance
+
+        for sig, outcome, content in result.extracted_tasks:
+            if sig in TASK_SIGNAL_TYPES:
+                obs = await record_task(
+                    TaskRecordRequest(
+                        senior_id=senior_id,
+                        interaction_id=interaction_id,
+                        occurred_at=occurred_at,
+                        signal_type=sig,
+                        outcome=outcome,
+                        content=content,
+                    ),
+                    log=store.log,
+                )
+            else:
+                provenance = Provenance(
+                    interaction_id=interaction_id,
+                    occurred_at=occurred_at,
+                    signal_type=sig,
+                )
+                obs = Observation(
+                    id=uuid7(),
+                    senior_id=senior_id,
+                    provenance=provenance,
+                    content=content,
+                    outcome=outcome,
+                )
+                await append_observation(obs, log=store.log)
+
+            recorded_out.append(
+                ObservationOut(
+                    id=obs.id,
+                    signal_type=obs.provenance.signal_type.value,
+                    outcome=obs.outcome.value if obs.outcome else None,
+                    content=obs.content,
+                    occurred_at=_iso(obs.provenance.occurred_at),
+                    supersedes_id=obs.supersedes_id,
+                )
             )
-        )
 
     # Generate ElevenLabs audio if TTS is configured
     tts_audio_base64: str | None = None
@@ -688,8 +770,9 @@ async def chat_with_senior(
         try:
             audio_bytes = await store.tts.synthesise(result.reply, language_tag=senior.preferred_language)
             tts_audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-        except Exception:
-            # Non-blocking fallback: browser TTS can still read reply text if ElevenLabs fails
+        except Exception as tts_err:
+            import logging
+            logging.getLogger(__name__).warning("ElevenLabs TTS synthesis failed: %s", tts_err)
             tts_audio_base64 = None
 
     return ChatTurnOut(
@@ -698,4 +781,112 @@ async def chat_with_senior(
         audio_base64=tts_audio_base64,
         observations_recorded=recorded_out,
     )
+
+
+# ---------------------------------------------------------------------------
+# Place Memories & Reminiscence (Dementia Cognitive Screening)
+# ---------------------------------------------------------------------------
+
+_demo_places: dict[str, list[dict]] = {
+    "018d0000-0000-7000-8000-000000000001": [
+        {
+            "id": UUID("018d0000-0000-7000-8000-000000000101"),
+            "senior_id": UUID("018d0000-0000-7000-8000-000000000001"),
+            "title": "Changi Beach Park",
+            "description": "Where Arun used to go cycling every Sunday morning and have teh tarik with friends.",
+            "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=60",
+            "personal_memory": "Arun spent Sunday mornings here in the 1980s cycling with his brother along the coastline.",
+            "recognition_keys": ["changi", "changi beach", "beach", "coast", "cycling", "sea"],
+            "prompt_question": "Arun, look at this photo! Do you remember where this beach is?",
+            "recall_attempts": 3,
+            "recall_successes": 3,
+            "last_asked_at": "Yesterday",
+        },
+        {
+            "id": UUID("018d0000-0000-7000-8000-000000000102"),
+            "senior_id": UUID("018d0000-0000-7000-8000-000000000001"),
+            "title": "Tiong Bahru Market & Hawker Centre",
+            "description": "Arun's favourite spot for chwee kueh and fresh kopi on weekends.",
+            "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=60",
+            "personal_memory": "Met here with old schoolmates every first Saturday of the month.",
+            "recognition_keys": ["tiong bahru", "market", "hawker", "chwee kueh", "kopi", "food centre"],
+            "prompt_question": "Do you recognize this famous market with the round courtyard?",
+            "recall_attempts": 2,
+            "recall_successes": 1,
+            "last_asked_at": "3 days ago",
+        },
+    ],
+    "018d0000-0000-7000-8000-000000000002": [
+        {
+            "id": UUID("018d0000-0000-7000-8000-000000000103"),
+            "senior_id": UUID("018d0000-0000-7000-8000-000000000002"),
+            "title": "Singapore Botanic Gardens — Orchid Garden",
+            "description": "Lily's beloved VIP Orchid Garden where she admires rare orchid hybrids.",
+            "image_url": "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?w=800&auto=format&fit=crop&q=60",
+            "personal_memory": "Lily took award-winning photographs of the National Orchid Garden during the annual orchid show.",
+            "recognition_keys": ["botanic", "botanic garden", "orchid", "orchid garden", "garden", "flowers"],
+            "prompt_question": "Lily, look at these beautiful orchids! Do you remember which garden this was taken at?",
+            "recall_attempts": 4,
+            "recall_successes": 4,
+            "last_asked_at": "2 days ago",
+        }
+    ]
+}
+
+
+@router.get("/seniors/{senior_id}/places", response_model=PlaceMemoryListOut)
+async def list_places(senior_id: UUID) -> PlaceMemoryListOut:
+    key = str(senior_id)
+    items = _demo_places.get(key, [])
+    return PlaceMemoryListOut(
+        places=[
+            PlaceMemoryOut(
+                id=item["id"],
+                senior_id=item["senior_id"],
+                title=item["title"],
+                description=item["description"],
+                image_url=item["image_url"],
+                personal_memory=item["personal_memory"],
+                recognition_keys=item.get("recognition_keys", []),
+                prompt_question=item["prompt_question"],
+                recall_attempts=item.get("recall_attempts", 0),
+                recall_successes=item.get("recall_successes", 0),
+                last_asked_at=item.get("last_asked_at"),
+            )
+            for item in items
+        ]
+    )
+
+
+@router.post("/seniors/{senior_id}/places", response_model=PlaceMemoryOut, status_code=status.HTTP_201_CREATED)
+async def create_place(senior_id: UUID, body: PlaceMemoryBody) -> PlaceMemoryOut:
+    key = str(senior_id)
+    if key not in _demo_places:
+        _demo_places[key] = []
+    
+    new_id = uuid7()
+    place_dict = {
+        "id": new_id,
+        "senior_id": senior_id,
+        "title": body.title,
+        "description": body.description,
+        "image_url": body.image_url,
+        "personal_memory": body.personal_memory,
+        "recognition_keys": body.recognition_keys,
+        "prompt_question": body.prompt_question or f"Do you remember where this photo was taken?",
+        "recall_attempts": 0,
+        "recall_successes": 0,
+        "last_asked_at": "Just added",
+    }
+    _demo_places[key].append(place_dict)
+    return PlaceMemoryOut(**place_dict)
+
+
+@router.delete("/seniors/{senior_id}/places/{place_id}")
+async def delete_place(senior_id: UUID, place_id: UUID) -> dict:
+    key = str(senior_id)
+    if key in _demo_places:
+        _demo_places[key] = [p for p in _demo_places[key] if p["id"] != place_id]
+    return {"status": "deleted", "place_id": str(place_id)}
+
 

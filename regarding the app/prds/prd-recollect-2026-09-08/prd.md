@@ -459,6 +459,15 @@ The device does not prolong a conversation beyond the task at hand or the senior
 - After a task completes, the device opens no new topic and adds no filler unless the senior initiates.
 - A test that a completed task produces no follow-up prompts passes.
 
+#### FR-36: Two-way conversational flow and active listening
+
+During an active conversational exchange initiated by the senior, the device engages in a warm, balanced, two-way dialogue rather than one-sided task confirmation. It practices active listening by acknowledging what the senior shared and asking an unhurried, relevant follow-up question or conversational bridge (e.g., regarding everyday activities, weather, gardening, or meals), while always respecting conversational bounds (FR-35) when the senior signals closure. Realizes UJ-1, UJ-4. Governed by AD-8, FR-30, FR-31, FR-34.
+
+**Consequences (testable):**
+- In conversational turns where the senior shares everyday stories, feelings, or updates, the device responds with both empathetic validation and a relevant conversational follow-up.
+- The device maintains rolling context across recent turns within the interaction so multi-turn conversations feel continuous and attentive.
+- Responses never exceed 2-3 sentences and never use clinical or diagnostic words (AD-8).
+
 ## 5. Non-Goals (Explicit)
 
 v1 is not, and will not be, any of the following:

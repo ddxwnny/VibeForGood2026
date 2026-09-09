@@ -32,9 +32,16 @@ def build_store(settings: Settings) -> AppState:
         store.log = PostgresObservationLog(session_factory)
         store.heartbeat = PostgresHeartbeat(session_factory)
         store.grant_store = PostgresGrantStore(session_factory)
+        setattr(store, "engine", engine)
 
     if settings.use_real_llm:
-        if settings.openrouter_api_key:
+        if settings.groq_api_key:
+            from recollect.adapters.groq_llm import GroqLLM
+            store.llm = GroqLLM(
+                api_key=settings.groq_api_key,
+                model_id=settings.groq_model_id,
+            )
+        elif settings.openrouter_api_key:
             store.llm = OpenRouterLLM(
                 api_key=settings.openrouter_api_key,
                 model_id=settings.openrouter_model_id,

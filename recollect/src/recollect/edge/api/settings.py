@@ -7,17 +7,27 @@ setting for a *configured* service is a boot failure, not a silent default —
 the app never quietly falls back to mock data in a real environment.
 """
 
-from __future__ import annotations
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_ENV_FILES = [
+    str(Path.cwd() / ".env"),
+    str(Path.cwd() / "recollect" / ".env"),
+    str(Path(__file__).resolve().parents[3] / ".env"),
+    str(Path(__file__).resolve().parents[4] / ".env"),
+    ".env",
+    "recollect/.env",
+]
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="RECOLLECT_", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_ENV_FILES, env_prefix="RECOLLECT_", extra="ignore")
 
     # Runtime mode: "dev" permits in-memory adapters when services aren't
     # configured; anything else requires real adapters for every service.
     environment: str = "dev"
+    seed_demo_data: bool = True
 
     # --- Persistence (PostgreSQL) ---
     database_url: str = ""
@@ -29,6 +39,10 @@ class Settings(BaseSettings):
 
     openrouter_api_key: str = ""
     openrouter_model_id: str = "meta-llama/llama-3.3-70b-instruct:free"
+
+    # --- LLM (Groq) ---
+    groq_api_key: str = ""
+    groq_model_id: str = "qwen/qwen3.8-27b"
 
     # --- TTS (ElevenLabs, assumed) ---
     elevenlabs_api_key: str = ""
@@ -51,13 +65,24 @@ class Settings(BaseSettings):
     # via per-grant API keys resolved against GrantStorePort.
     device_api_key: str = ""
 
+    # --- CORS (api-standards: explicit origin whitelist, never "*" in prod) ---
+    # Comma-separated allowlist of browser origins. Empty means "same-origin only"
+    # (the Node proxy serves frontend + backend from the same origin). Dev may set
+    # e.g. "http://localhost:3000,http://127.0.0.1:3000" for split-hosting.
+    cors_allow_origins: str = ""
+
+    # --- TLS / HSTS (security-standards: HSTS in production) ---
+    # When behind a TLS-terminating proxy, enable Strict-Transport-Security.
+    hsts_enabled: bool = False
+    hsts_max_age: int = 63072000
+
     @property
     def use_real_database(self) -> bool:
         return bool(self.database_url)
 
     @property
     def use_real_llm(self) -> bool:
-        return bool(self.anthropic_api_key or self.openrouter_api_key)
+        return bool(self.anthropic_api_key or self.groq_api_key or self.openrouter_api_key)
 
     @property
     def use_real_tts(self) -> bool:
@@ -70,6 +95,11 @@ class Settings(BaseSettings):
     @property
     def use_real_key_store(self) -> bool:
         return bool(self.vault_url)
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        """Parsed origin allowlist; empty list means same-origin only (no CORS header)."""
+        return [origin.strip() for origin in self.cors_allow_origins.split(",") if origin.strip()]
 
 
 def require_real_services(settings: Settings) -> None:

@@ -78,3 +78,94 @@ def test_aunty_fallback_reply_warmth_and_language() -> None:
     assert "Mdm Tan" in res.reply
     from recollect.core.weekly_window import contains_window_violation
     assert not contains_window_violation(res.reply)
+
+
+def test_aunty_two_way_conversational_follow_up_fr36() -> None:
+    """FR-36: Aunty must include active listening follow-up questions instead of bare acknowledgements."""
+    context = ChatDialogueContext(
+        senior_id="018e3a2b-0000-7000-8000-000000000001",
+        display_name="Uncle Arun",
+        preferred_language="en-SG",
+    )
+    res = process_chat_turn(
+        message="I already took my blood pressure pill just now.",
+        context=context,
+    )
+    # Should acknowledge pill AND ask a follow up question (e.g. warm water)
+    assert "Uncle Arun" in res.reply
+    assert "?" in res.reply
+    assert "water" in res.reply.lower() or "breakfast" in res.reply.lower() or "feeling" in res.reply.lower()
+
+
+@pytest.mark.asyncio
+async def test_aunty_multi_turn_history_in_llm_request_fr36() -> None:
+    """FR-36: Multi-turn history is properly supplied to the LLM prompt."""
+    from recollect.core.ports.llm_port import LLMPort, LLMRequest, LLMResponse
+    
+    received_requests: list[LLMRequest] = []
+    
+    class FakeLLM(LLMPort):
+        async def complete(self, request: LLMRequest) -> LLMResponse:
+            received_requests.append(request)
+            return LLMResponse(
+                content="Wah Uncle Arun, so nice you bought fresh fish from Tekka Market! What fish did you pick today?",
+                model_id="fake-model",
+                prompt_version=request.prompt_version,
+            )
+
+    fake_llm = FakeLLM()
+    context = ChatDialogueContext(
+        senior_id="018e3a2b-0000-7000-8000-000000000001",
+        display_name="Uncle Arun",
+        preferred_language="en-SG",
+        recent_turns=[
+            {"role": "user", "text": "I just reached Tekka Market."},
+            {"role": "ai", "text": "Take your time walking, Uncle. Let me know what you find!"},
+        ],
+    )
+    from recollect.app.chat_dialogue import process_chat_turn_async
+    res = await process_chat_turn_async(
+        message="I bought some fresh fish.",
+        context=context,
+        llm=fake_llm,
+    )
+    assert len(received_requests) == 1
+    req = received_requests[0]
+    assert "Tekka Market" in req.user_message
+    assert "Uncle Arun" in req.user_message
+    assert "Tekka Market" in res.reply
+    assert "?" in res.reply
+
+
+def test_aunty_contextual_yes_no_answers() -> None:
+    """Verifies Aunty does not repeat canned phrases when receiving yes or no answers."""
+    # Test 'yes' to medication water question
+    ctx_yes = ChatDialogueContext(
+        senior_id="018e3a2b-0000-7000-8000-000000000001",
+        display_name="Uncle Arun",
+        preferred_language="en-SG",
+        recent_turns=[
+            {"role": "user", "text": "I took my pill."},
+            {"role": "ai", "text": "Glad you took your medication on time! Did you take it with warm water already?"},
+        ],
+    )
+    res_yes = process_chat_turn(message="yes", context=ctx_yes)
+    assert "Uncle Arun" in res_yes.reply
+    assert "How has the rest of your day been treating you" not in res_yes.reply
+    assert "water" in res_yes.reply.lower() or "breakfast" in res_yes.reply.lower()
+
+    # Test 'no' to orchids blooming question
+    ctx_no = ChatDialogueContext(
+        senior_id="018e3a2b-0000-7000-8000-000000000001",
+        display_name="Uncle Arun",
+        preferred_language="en-SG",
+        recent_turns=[
+            {"role": "user", "text": "I am watering my balcony orchids."},
+            {"role": "ai", "text": "How are your orchids doing? Are they flowering nicely?"},
+        ],
+    )
+    res_no = process_chat_turn(message="not yet", context=ctx_no)
+    assert "Uncle Arun" in res_no.reply
+    assert "How has the rest of your day been treating you" not in res_no.reply
+    assert "flower" in res_no.reply.lower() or "care" in res_no.reply.lower() or "sun" in res_no.reply.lower() or "breeze" in res_no.reply.lower()
+

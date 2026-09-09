@@ -1,138 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recollect — mock frontend</title>
-  <style>
-    :root { --ink: #243D36; --muted: #59685F; --primary: #19594E; --surface: #FFFEFA; --soft: #E8EFDF; --border: #DCE1D6; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: "Avenir Next", "Segoe UI", sans-serif; color: var(--ink); background: #F8F7F2; }
-    header { padding: 24px 32px; border-bottom: 1px solid var(--border); background: var(--surface); }
-    header h1 { margin: 0; font-family: Georgia, serif; font-weight: 400; font-size: 28px; }
-    header .tag { color: var(--muted); font-size: 13px; margin-top: 4px; }
-    main { max-width: 720px; margin: 24px auto; padding: 0 20px; }
-    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
-    .panel h2 { margin: 0 0 8px; font-size: 16px; }
-    .panel p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .ok { background: var(--soft); color: var(--primary); }
-    .err { background: #FBEFD7; color: #775414; }
-    label { display: block; font-size: 13px; margin: 8px 0 2px; color: var(--muted); }
-    input, select, textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font: inherit; font-size: 14px; }
-    input[type="checkbox"] { width: auto; }
-    .row { display: flex; gap: 8px; align-items: center; }
-    button { margin-top: 10px; padding: 8px 16px; background: var(--primary); color: #fff; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
-    button.ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-    pre { background: var(--soft); padding: 10px; border-radius: 8px; font-size: 12px; overflow-x: auto; white-space: pre-wrap; }
-    code { background: var(--soft); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
-    .note { color: var(--muted); font-size: 12px; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#19594e">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Recollect — a thoughtful space for everyday conversations and family connection. Interactive demonstration with simulated results.">
+  <title>Recollect · A little closer, every day</title>
+  <link rel="preconnect" href="https://api.elevenlabs.io" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Recollect</h1>
-    <div class="tag">MOCK frontend — throwaway. Replaced by the Next.js app (dawn &amp; kaiyi).</div>
-  </header>
-  <main>
-    <section class="panel">
-      <h2>Backend health</h2>
-      <p><span id="health" class="badge">checking…</span> <code>GET /api/health</code></p>
-    </section>
-
-    <section class="panel">
-      <h2>Enrol a senior</h2>
-      <label>Display name <input id="enrol-name" value="Mrs Tan" /></label>
-      <label>Language <input id="enrol-lang" value="zh-cmn-Hans-SG" /></label>
-      <div class="row">
-        <label><input type="checkbox" id="enrol-co-sign" checked /> co-signature</label>
-        <label><input type="checkbox" id="enrol-research" checked /> research consent</label>
-        <label><input type="checkbox" id="enrol-disclosure" checked /> processor disclosure</label>
-      </div>
-      <button onclick="enrol()">Enrol</button>
-      <pre id="enrol-out"></pre>
-    </section>
-
-    <!-- Senior Aunty Voice/Text Chatbot -->
-    <section class="panel" style="border: 2px solid var(--primary); background: #FAFDF9;">
-      <h2 style="color: var(--primary); font-size: 20px;">🗣️ Talk to Recollect (Aunty Voice Chatbot)</h2>
-      <p style="font-size: 14px;">Senior Voice / Text companion interface. Everyday tasks (meds, appointments, mail, routines) are automatically recorded.</p>
-      
-      <label>Senior id <input id="chat-senior" placeholder="Enrol above or enter Senior ID" /></label>
-
-      <div id="chat-box" style="height: 240px; overflow-y: auto; border: 1px solid var(--border); background: #FFF; border-radius: 8px; padding: 12px; margin: 12px 0; display: flex; flex-direction: column; gap: 8px;">
-        <div style="background: var(--soft); padding: 8px 12px; border-radius: 8px; max-width: 80%; align-self: flex-start; font-size: 15px;">
-          <strong>Recollect:</strong> Hello Aunty! How are you today? Let me know if you took your medicine or have any appointments!
-        </div>
-      </div>
-
-      <div class="row" style="margin-bottom: 8px;">
-        <input id="chat-input" placeholder="Type a message or use voice..." style="font-size: 16px; padding: 10px;" onkeydown="if(event.key==='Enter') sendChat()" />
-        <button onclick="sendChat()" style="margin-top: 0; padding: 10px 18px;">Send</button>
-        <button id="mic-btn" class="ghost" onclick="toggleVoiceInput()" style="margin-top: 0; padding: 10px 16px;">🎤 Speak</button>
-      </div>
-
-      <div class="row">
-        <label style="margin: 0; font-size: 13px;">
-          <input type="checkbox" id="chat-tts" checked /> Speak responses out loud (Audio playback)
-        </label>
-      </div>
-      <pre id="chat-out" style="margin-top: 10px;"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Roster</h2>
-      <button class="ghost" onclick="roster()">Load roster</button>
-      <pre id="roster-out"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Record a task</h2>
-      <label>Senior id <input id="task-senior" /></label>
-      <label>Signal
-        <select id="task-signal">
-          <option>medication</option><option>appointment</option><option>mail</option><option>routine</option>
-        </select>
-      </label>
-      <label>Outcome
-        <select id="task-outcome">
-          <option>completed</option><option>declined</option><option>incomplete</option>
-        </select>
-      </label>
-      <label>Content <input id="task-content" value="took the morning dose" /></label>
-      <button onclick="recordTask()">Record</button>
-      <pre id="task-out"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Functional series</h2>
-      <label>Senior id <input id="series-senior" /></label>
-      <button class="ghost" onclick="series()">Read series</button>
-      <pre id="series-out"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Weekly window</h2>
-      <label>Senior id <input id="window-senior" /></label>
-      <div class="row"><label><input type="checkbox" id="window-baseline" /> baseline</label></div>
-      <button class="ghost" onclick="weekly()">Compose + deliver</button>
-      <pre id="window-out"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Erase (withdrawal / death)</h2>
-      <label>Senior id <input id="erase-senior" /></label>
-      <label>Reason <select id="erase-reason"><option>withdrawal</option><option>death</option></select></label>
-      <button onclick="erase()">Crypto-shred</button>
-      <pre id="erase-out"></pre>
-    </section>
-
-    <section class="panel">
-      <h2>Retention sweep</h2>
-      <button class="ghost" onclick="sweep()">Run retention sweep</button>
-      <pre id="sweep-out"></pre>
-    </section>
-  </main>
-  <script src="/app.js"></script>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="demo-banner">DEMO <span>Fictional people · Simulated insights</span></div>
+  <div id="app"></div>
+  <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+  <noscript>Please enable JavaScript to explore this interactive prototype.</noscript>
 </body>
 </html>

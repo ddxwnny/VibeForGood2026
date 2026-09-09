@@ -13,6 +13,7 @@ import httpx
 from recollect.core.ports.tts_port import TTSPort
 
 DEFAULT_BASE_URL = "https://api.elevenlabs.io"
+DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel (warm female voice)
 MODEL_ID = "eleven_multilingual_v2"
 
 
@@ -20,18 +21,25 @@ class ElevenLabsTTS(TTSPort):
     def __init__(
         self,
         api_key: str,
-        voice_id: str,
+        voice_id: str = "",
         client: httpx.AsyncClient | None = None,
         base_url: str = DEFAULT_BASE_URL,
     ) -> None:
         self._api_key = api_key
-        self._voice_id = voice_id
+        self._voice_id = voice_id.strip() if voice_id else DEFAULT_VOICE_ID
         self._client = client or httpx.AsyncClient(base_url=base_url, timeout=60.0)
 
     async def synthesise(self, text: str, language_tag: str) -> bytes:
         resp = await self._client.post(
             f"/v1/text-to-speech/{self._voice_id}",
-            json={"text": text, "model_id": MODEL_ID},
+            json={
+                "text": text,
+                "model_id": MODEL_ID,
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75,
+                },
+            },
             headers={"xi-api-key": self._api_key, "content-type": "application/json"},
         )
         resp.raise_for_status()

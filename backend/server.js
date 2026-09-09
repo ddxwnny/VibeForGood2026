@@ -13,6 +13,27 @@ const server = createServer(async (request, response) => {
   try {
     const { pathname } = new URL(request.url, 'http://localhost');
     response.setHeader('X-Content-Type-Options', 'nosniff');
+    if (pathname.startsWith('/v1/')) {
+      const targetUrl = new URL(request.url, 'http://127.0.0.1:8000');
+      const proxyReq = (await import('node:http')).request(
+        targetUrl,
+        {
+          method: request.method,
+          headers: { ...request.headers, host: '127.0.0.1:8000' },
+        },
+        (proxyRes) => {
+          response.writeHead(proxyRes.statusCode, proxyRes.headers);
+          proxyRes.pipe(response, { end: true });
+        }
+      );
+      proxyReq.on('error', (err) => {
+        response.writeHead(502, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ error: 'Backend unreachable', detail: err.message }));
+      });
+      request.pipe(proxyReq, { end: true });
+      return;
+    }
+
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       response.writeHead(405, { Allow: 'GET, HEAD' });
       response.end();
