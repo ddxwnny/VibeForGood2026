@@ -222,7 +222,13 @@ node_modules/
 .DS_Store
 .env.*
 !.env.example
-
 # Local agent/skill tooling (not project code)
 .agents/
 skills-lock.json
+
+# iOS local build/signing state
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.ipa
+*.dSYM/

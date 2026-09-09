@@ -1,0 +1,11 @@
+{
+  "appId": "com.recollect.demo",
+  "appName": "Recollect",
+  "webDir": "frontend",
+  "backgroundColor": "#f8f7f2",
+  "ios": {
+    "contentInset": "never",
+    "preferredContentMode": "mobile",
+    "backgroundColor": "#f8f7f2"
+  }
+}

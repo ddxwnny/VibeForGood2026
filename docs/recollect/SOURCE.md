@@ -11,3 +11,7 @@ Proposed additions: family list, connection consent and revocation, expiry/retry
 The proposed warm cream/teal design is not a separately approved brand system. Personas Mei, Arun and Lily are fictional. Layouts are implemented in ../../frontend/ as an interactive prototype.
 
 Workflow limitation: BMad project scripts (including memlog.py) and project config are absent. uv exists at /Users/dawn/.local/bin/uv but is not on the tool session PATH. These draft design documents are a reviewable handoff, not a completed/logged BMad finalization. No canonical .memlog.md has been hand-created. Optional reviewer gate remains available.
+
+## Mobile direction, 9 September 2026
+
+User requested a phone application instead of a web application, and selected **iPhone only**. This supersedes the earlier responsive-web/desktop direction. Implemented an iPhone-oriented interface, Capacitor iOS packaging, bundled assets, bottom caregiver tabs, compact back headers, safe-area spacing and mobile onboarding. The prototype remains simulated; this request does not make health assessment, credentials or cross-device linking live. App icon source: [app-icon.svg](app-icon.svg).
