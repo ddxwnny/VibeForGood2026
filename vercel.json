@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "name": "vibeforgood2026",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/v1/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/styles.css",
+      "dest": "/frontend/styles.css"
+    },
+    {
+      "src": "/app.js",
+      "dest": "/frontend/app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/"
+    }
+  ]
+}

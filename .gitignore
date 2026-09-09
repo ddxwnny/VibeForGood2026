@@ -236,3 +236,4 @@ DerivedData/
 xcuserdata/
 *.ipa
 *.dSYM/
+.vercel

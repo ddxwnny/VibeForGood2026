@@ -244,6 +244,17 @@ def _store(request: Request) -> AppState:
     return request.app.state.store
 
 
+async def _ensure_demo_seeded(request: Request) -> None:
+    settings = getattr(request.app.state, "settings", None)
+    should_seed = getattr(settings, "seed_demo_data", True) if settings is not None else True
+    if should_seed:
+        try:
+            from recollect.edge.api.demo_seed import seed_demo_seniors_if_empty
+            await seed_demo_seniors_if_empty(request.app.state.store)
+        except Exception:
+            pass
+
+
 def _parse_utc(value: str | None) -> datetime | None:
     if value is None:
         return None
@@ -434,6 +445,7 @@ async def list_observations(
     to_utc: str | None = Query(default=None, alias="to"),
 ) -> ObservationListOut:
     store = _store(request)
+    await _ensure_demo_seeded(request)
     now = _clock.utc_now()
     start = _parse_utc(from_utc) or (now - timedelta(days=7))
     end = _parse_utc(to_utc) or now
@@ -462,6 +474,7 @@ async def list_observations(
 @router.get("/roster", response_model=RosterOut)
 async def roster(request: Request, phone: PhoneDep) -> RosterOut:
     store = _store(request)
+    await _ensure_demo_seeded(request)
     if phone.wildcard:
         senior_ids = await store.log.list_senior_ids()
     else:
@@ -501,6 +514,7 @@ async def weekly_window(
     baseline: bool = Query(default=False),
 ) -> WeeklyWindowOut:
     store = _store(request)
+    await _ensure_demo_seeded(request)
     if not phone.can(senior_id=senior_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorised for this senior.")
 
@@ -662,12 +676,8 @@ async def chat_with_senior(
     Automatically logs any completed/declined everyday task observations.
     """
     store = _store(request)
+    await _ensure_demo_seeded(request)
     senior = await store.log.get_senior(senior_id)
-    if senior is None:
-        from recollect.edge.api.demo_seed import DEMO_ARUN_ID, DEMO_LILY_ID, seed_demo_seniors_if_empty
-        if senior_id in (DEMO_ARUN_ID, DEMO_LILY_ID):
-            await seed_demo_seniors_if_empty(store)
-            senior = await store.log.get_senior(senior_id)
 
     if senior is None:
         raise HTTPException(

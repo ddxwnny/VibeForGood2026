@@ -21,8 +21,13 @@
 // 1. CONFIGURATION & GLOBAL CONSTANTS
 // ============================================================================
 
-const app = document.querySelector('#app');
-const API_BASE = (window.location.port === '8000') ? '' : 'http://127.0.0.1:8000';
+const API_BASE = (
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+  window.location.port !== '8000' &&
+  window.location.port !== '3000' &&
+  window.location.port !== ''
+) ? 'http://127.0.0.1:8000' : '';
 
 const landmarkPresets = [
   {
