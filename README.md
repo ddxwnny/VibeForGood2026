@@ -1,89 +1,71 @@
-# VibeForGood2026
-#NgYanHerng 
+# Recollect
 
-A starter with a Node.js backend and a plain HTML, CSS, and JavaScript frontend.
-No third-party packages, Python, or uv are required.
+Author: NgYanHerng
 
-## Start developing
+A responsive UI/UX prototype for family connection and everyday conversations.
+Built with plain HTML, CSS and JavaScript, served by a dependency-free Node.js backend.
 
-Use Node.js 22 or newer (which includes npm). From this project directory, run:
+## Run locally
+
+Use Node.js 22 or newer. From this directory:
 
 ```bash
 npm run dev
 ```
 
-Open http://127.0.0.1:3000. The page checks `/api/health` to confirm the frontend
-can reach the backend. The backend restarts when its code changes; refresh the
-browser after editing frontend files. Stop the server with Ctrl+C.
+Open http://127.0.0.1:3000. No dependency installation or frontend build is needed.
+Refresh the browser after frontend edits; the backend restarts when its files change.
+Stop with Ctrl+C. Use `PORT=3001 npm run dev` to change ports.
 
-There are no dependencies to install and no frontend build step.
+## Explore the demo
 
-## Files
+1. Choose **I'm supporting someone**. The signup/login preview has fictional credentials prefilled; accept the demo acknowledgment and continue.
+2. Open Arun or Lily from **Your family**. Use the profile selector to compare their separate dashboards.
+3. Open **Observations**, select concerns and optionally enter fictional notes. Save to see the selected concerns in that person's overview.
+4. Choose **Link someone**, enter a fictional first name and generate a code. Choose **Preview loved one's phone**, enter the displayed code and confirm sharing consent.
+5. In the conversation, tap the microphone twice to preview listening and a sample transcript, or type a fictional reply. Responses are scripted. Finish explicitly.
+6. Return to the caregiver family list to find the newly linked profile. **Your connection** on the conversation screen allows disconnecting the demo link.
+
+To preview the older-adult journey directly, select **I'm here for a conversation** and use `123456` when no new invitation is pending. This is a reusable demonstration shortcut. Newly generated invitations expire after ten minutes and are consumed on acceptance.
+
+## What is simulated
+
+All profiles, metrics and recommendations are fictional. Account creation, login,
+linking and AI conversations are UI demonstrations. No passwords are saved,
+no email is sent, no microphone audio is captured, and no clinical assessment runs.
+State is held only in the current page session; refreshing resets it. Linking is
+not synchronized across separate phones or tabs. Do not enter real personal or
+health information into this demo.
+
+The planned product supports durable linking on each adult's phone. Real accounts,
+server-side authorization, storage, consent management, speech recognition, AI
+integration and validated health interpretation are future implementation work.
+Family observations in this prototype do not modify any score or recommendation.
+
+## Project files
 
 ```text
-backend/
-  server.js       HTTP server, API routes, and frontend asset serving
-frontend/
-  index.html      Page structure
-  styles.css      Page styling
-  app.js          Browser logic and API connection
-package.json      Commands and Node.js requirement
-.gitignore        Files excluded from Git
-README.md         Setup and development instructions
+backend/server.js          Local HTTP server, frontend assets and /api/health
+frontend/index.html        App entry, metadata and accessible status region
+frontend/styles.css        Responsive Recollect design and layout
+frontend/app.js            Interactive screens and demo state
+package.json               Development commands
+docs/recollect/DESIGN.md    Draft visual tokens and component specifications
+docs/recollect/EXPERIENCE.md Draft journeys, states and accessibility behavior
+docs/recollect/SOURCE.md    User requirements and workflow limitations
 ```
 
-Add backend API routes in `backend/server.js` before the asset lookup. Add UI
-in `frontend/index.html`, styling in `frontend/styles.css`, and interactions in
-`frontend/app.js`. When adding new frontend assets, register their URL, filename,
-and content type in the server's `assets` map.
-
-## Commands
+## Checks
 
 ```bash
-npm run dev     # Start with automatic backend restarts
-npm start       # Start without watching files
-npm run check   # Check backend and frontend JavaScript syntax
+npm run check   # Backend and frontend JavaScript syntax
+npm start       # Run without backend file watching
 ```
 
-The server binds to `127.0.0.1:3000` by default. To use another port:
+The prototype was also exercised in headless Chrome for account preview, profile
+switching, observation isolation, invitation/consent, voice simulation, completion,
+safe rendering of typed text, and mobile overflow across all twelve routes.
+This is not a clinical or accessibility certification.
 
-```bash
-PORT=3001 npm run dev
-```
-
-`HOST` can also be set through the shell. Environment files are not loaded
-automatically. Keep secrets in backend environment variables, never frontend code.
-
-This starter provides an API connection and static page. Add persistence,
-authentication, and application-specific features as your project needs them.
-
-## Working together (branch + PR convention)
-
-Two people work off `main` — never commit to it directly.
-
-1. Sync, then branch off `main` for each piece of work:
-
-   ```bash
-   git checkout main
-   git pull
-   git checkout -b <your-name>/<feature>   # e.g. braed/medication-endpoint
-   ```
-
-2. Commit as you go, then push and open a pull request:
-
-   ```bash
-   git push -u origin <your-name>/<feature>
-   ```
-
-3. The other person reviews the PR and merges it into `main`, then deletes the branch.
-
-4. Stay in sync — before starting work and before pushing:
-
-   ```bash
-   git pull origin main
-   git merge main        # or: git rebase main
-   ```
-
-The backend is a single `backend/server.js`. To avoid constant merge conflicts,
-split routes into their own modules (e.g. `backend/routes/medication.js`) and keep
-`server.js` a thin router. Each laptop runs `npm run dev` on its own machine.
+The design documents remain draft: the repository is missing BMad's project
+logging/finalization scripts. They are usable for review and further implementation.
