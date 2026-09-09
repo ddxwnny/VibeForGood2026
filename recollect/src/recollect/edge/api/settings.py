@@ -22,23 +22,34 @@ class Settings(BaseSettings):
     # --- Persistence (PostgreSQL) ---
     database_url: str = ""
 
-    # --- LLM (Anthropic, decided) ---
+    # --- LLM (Anthropic or OpenRouter) ---
     anthropic_api_key: str = ""
     anthropic_model_id: str = "claude-sonnet-5"     # pinned, never a floating alias (AD-15)
     anthropic_weekly_model_id: str = "claude-opus-5"
+
+    openrouter_api_key: str = ""
+    openrouter_model_id: str = "meta-llama/llama-3.3-70b-instruct:free"
 
     # --- TTS (ElevenLabs, assumed) ---
     elevenlabs_api_key: str = ""
     elevenlabs_voice_id: str = ""
     elevenlabs_base_url: str = "https://api.elevenlabs.io"
 
-    # --- STT (provider undecided — see Architecture Spine Deferred) ---
+    # --- STT (Deepgram or generic HTTP STT) ---
     stt_base_url: str = ""
     stt_api_key: str = ""
+    deepgram_api_key: str = ""
+    deepgram_model: str = "nova-3"
 
     # --- Key management (AD-13; custody deferred) ---
     vault_url: str = ""
     vault_token: str = ""
+
+    # --- Device + phone-surface credentials (NFR-15, AD-14, AD-16) ---
+    # The device authenticates with this shared key to record heartbeats and
+    # report turns; the senior never authenticates. Human surfaces authenticate
+    # via per-grant API keys resolved against GrantStorePort.
+    device_api_key: str = ""
 
     @property
     def use_real_database(self) -> bool:
@@ -46,7 +57,7 @@ class Settings(BaseSettings):
 
     @property
     def use_real_llm(self) -> bool:
-        return bool(self.anthropic_api_key)
+        return bool(self.anthropic_api_key or self.openrouter_api_key)
 
     @property
     def use_real_tts(self) -> bool:
@@ -54,7 +65,7 @@ class Settings(BaseSettings):
 
     @property
     def use_real_stt(self) -> bool:
-        return bool(self.stt_base_url)
+        return bool(self.deepgram_api_key or self.stt_base_url)
 
     @property
     def use_real_key_store(self) -> bool:
@@ -74,11 +85,11 @@ def require_real_services(settings: Settings) -> None:
     if not settings.use_real_database:
         missing.append("RECOLLECT_DATABASE_URL")
     if not settings.use_real_llm:
-        missing.append("RECOLLECT_ANTHROPIC_API_KEY")
+        missing.append("RECOLLECT_OPENROUTER_API_KEY (or RECOLLECT_ANTHROPIC_API_KEY)")
     if not settings.use_real_tts:
         missing.append("RECOLLECT_ELEVENLABS_API_KEY")
     if not settings.use_real_stt:
-        missing.append("RECOLLECT_STT_BASE_URL")
+        missing.append("RECOLLECT_DEEPGRAM_API_KEY (or RECOLLECT_STT_BASE_URL)")
     if not settings.use_real_key_store:
         missing.append("RECOLLECT_VAULT_URL")
 

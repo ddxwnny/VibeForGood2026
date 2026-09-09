@@ -1,0 +1,36 @@
+# Byte-compiled / cached
+__pycache__/
+*.py[codz]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Version control / env
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editor junk
+.idea/
+.vscode/
+.DS_Store
+
+# Docs + demo (not needed in the image)
+README.md
+docs/
+regarding the app/

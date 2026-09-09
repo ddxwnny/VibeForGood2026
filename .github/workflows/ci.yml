@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, frontend]
+  pull_request:
+
+jobs:
+  test:
+    name: Test (Python 3.13)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recollect
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: uv sync --frozen --dev
+      - name: Run tests
+        # No database or vendor services are needed: tests use in-memory fakes.
+        run: uv run pytest -q
+
+  docker:
+    name: Build image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recollect
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: recollect
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -46,6 +46,12 @@ class FakeObservationLog(ObservationLogPort):
     async def save_senior(self, senior: Senior) -> None:
         self._seniors[senior.id] = senior
 
+    async def get_senior(self, senior_id: UUID) -> Senior | None:
+        return self._seniors.get(senior_id)
+
+    async def list_senior_ids(self) -> list[UUID]:
+        return list(self._seniors.keys())
+
     async def get_enrolment(self, senior_id: UUID) -> Enrolment | None:
         return self._enrolments.get(senior_id)
 

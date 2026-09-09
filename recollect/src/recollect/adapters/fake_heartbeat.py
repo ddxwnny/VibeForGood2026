@@ -15,5 +15,8 @@ class FakeHeartbeat(HeartbeatPort):
     def set_heartbeat(self, senior_id: UUID, at: datetime) -> None:
         self._beats[senior_id] = at
 
+    async def record_heartbeat(self, senior_id: UUID, at: datetime) -> None:
+        self._beats[senior_id] = at
+
     async def last_heartbeat_at(self, senior_id: UUID) -> datetime | None:
         return self._beats.get(senior_id)

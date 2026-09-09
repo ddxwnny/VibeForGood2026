@@ -86,3 +86,23 @@ class TombstoneRow(Base):
     reason: Mapped[str] = mapped_column(String(64))
     shredded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     stores_shredded: Mapped[list] = mapped_column(JSONType)     # list[str]
+
+
+class HeartbeatRow(Base):
+    __tablename__ = "heartbeats"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    senior_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
+class GrantRow(Base):
+    __tablename__ = "grants"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    senior_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    role: Mapped[str] = mapped_column(String(64))
+    scope: Mapped[str] = mapped_column(String(64))
+    api_key_hash: Mapped[str] = mapped_column(String(128), index=True)
+    granted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

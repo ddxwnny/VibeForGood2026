@@ -171,3 +171,31 @@ def test_fake_delivery_log_satisfies_delivery_log_port() -> None:
     }
     implemented = {n for n, _ in inspect.getmembers(FakeDeliveryLog, predicate=inspect.isfunction)}
     assert not (abstract - implemented)
+
+
+def test_fake_grant_store_satisfies_grant_store_port() -> None:
+    from recollect.adapters.fake_grant_store import FakeGrantStore
+    from recollect.core.ports.grant_store_port import GrantStorePort
+    import inspect
+
+    assert issubclass(FakeGrantStore, GrantStorePort)
+    abstract = {
+        n for n, _ in inspect.getmembers(GrantStorePort, predicate=inspect.isfunction)
+        if getattr(getattr(GrantStorePort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(FakeGrantStore, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)
+
+
+def test_postgres_log_satisfies_observation_log_port() -> None:
+    from recollect.adapters.postgres.observation_log import PostgresObservationLog
+    from recollect.core.ports.log_port import ObservationLogPort
+    import inspect
+
+    assert issubclass(PostgresObservationLog, ObservationLogPort)
+    abstract = {
+        n for n, _ in inspect.getmembers(ObservationLogPort, predicate=inspect.isfunction)
+        if getattr(getattr(ObservationLogPort, n), "__isabstractmethod__", False)
+    }
+    implemented = {n for n, _ in inspect.getmembers(PostgresObservationLog, predicate=inspect.isfunction)}
+    assert not (abstract - implemented)

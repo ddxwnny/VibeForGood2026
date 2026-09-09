@@ -1,8 +1,9 @@
 """
-End-to-end tests for the mock HTTP API.
+End-to-end tests for the versioned HTTP API (v1).
 
 Exercises every wired feature through the real ASGI app against the in-memory
 adapters — proving the use cases work over HTTP, not just at the unit level.
+Runs in dev mode, so device and phone auth are permissive by design.
 """
 
 import base64
@@ -12,10 +13,12 @@ from fastapi.testclient import TestClient
 
 from recollect.edge.api.main import app
 from recollect.edge.api.state import AppState
+from recollect.edge.api.settings import Settings
 
 
 @pytest.fixture
 def client() -> TestClient:
+    app.state.settings = Settings(environment="dev")
     app.state.store = AppState()
     with TestClient(app) as c:
         yield c
@@ -31,8 +34,8 @@ def _enrol(client: TestClient, name: str = "Mrs Tan", **overrides) -> dict:
         "ulysses_audio_base64": base64.b64encode(b"own voice").decode(),
     }
     payload.update(overrides)
-    resp = client.post("/api/enrolments", json=payload)
-    assert resp.status_code == 200, resp.text
+    resp = client.post("/v1/enrolments", json=payload)
+    assert resp.status_code == 201, resp.text
     return resp.json()
 
 
@@ -45,7 +48,7 @@ def test_enrol_then_roster(client: TestClient) -> None:
     data = _enrol(client, name="Mrs Tan")
     senior_id = data["senior_id"]
 
-    roster = client.get("/api/roster").json()["roster"]
+    roster = client.get("/v1/roster").json()["roster"]
     assert len(roster) == 1
     assert roster[0]["senior_id"] == senior_id
     assert roster[0]["consent_active"] is True
@@ -55,12 +58,12 @@ def test_record_and_read_observation(client: TestClient) -> None:
     senior_id = _enrol(client)["senior_id"]
 
     resp = client.post(
-        f"/api/seniors/{senior_id}/observations",
+        f"/v1/seniors/{senior_id}/observations",
         json={"signal_type": "medication", "outcome": "completed", "content": "took morning dose"},
     )
-    assert resp.status_code == 200, resp.text
+    assert resp.status_code == 201, resp.text
 
-    series = client.get(f"/api/seniors/{senior_id}/observations").json()["observations"]
+    series = client.get(f"/v1/seniors/{senior_id}/observations").json()["observations"]
     assert len(series) == 1
     assert series[0]["signal_type"] == "medication"
     assert series[0]["outcome"] == "completed"
@@ -68,7 +71,7 @@ def test_record_and_read_observation(client: TestClient) -> None:
 
 def test_observation_rejected_without_active_enrolment(client: TestClient) -> None:
     resp = client.post(
-        "/api/seniors/00000000-0000-0000-0000-000000000000/observations",
+        "/v1/seniors/00000000-0000-0000-0000-000000000000/observations",
         json={"signal_type": "medication", "outcome": "completed", "content": "x"},
     )
     assert resp.status_code == 400
@@ -76,7 +79,7 @@ def test_observation_rejected_without_active_enrolment(client: TestClient) -> No
 
 def test_enrolment_rejected_when_consent_missing(client: TestClient) -> None:
     resp = client.post(
-        "/api/enrolments",
+        "/v1/enrolments",
         json={
             "display_name": "Mrs Lim",
             "recipient_co_signature": False,  # missing artefact
@@ -91,11 +94,11 @@ def test_enrolment_rejected_when_consent_missing(client: TestClient) -> None:
 def test_weekly_window_composes_and_delivers(client: TestClient) -> None:
     senior_id = _enrol(client)["senior_id"]
     client.post(
-        f"/api/seniors/{senior_id}/observations",
+        f"/v1/seniors/{senior_id}/observations",
         json={"signal_type": "routine", "outcome": "completed", "content": "walked"},
     )
 
-    resp = client.post(f"/api/seniors/{senior_id}/window", params={"baseline": "true"})
+    resp = client.post(f"/v1/seniors/{senior_id}/window", params={"baseline": "true"})
     assert resp.status_code == 200, resp.text
     body = resp.json()
     assert body["recipient_text"]
@@ -104,14 +107,63 @@ def test_weekly_window_composes_and_delivers(client: TestClient) -> None:
     assert body["senior_delivered"] is True
 
 
+def test_device_heartbeat_and_sweep(client: TestClient) -> None:
+    senior_id = _enrol(client)["senior_id"]
+
+    # Device reports a heartbeat; the liveness sweep then sees it as reachable.
+    resp = client.post("/v1/device/heartbeat", json={"senior_id": senior_id})
+    assert resp.status_code == 204
+
+    sweep = client.post("/v1/jobs/heartbeat-sweep").json()
+    assert sweep["results"][0]["senior_id"] == senior_id
+    assert sweep["results"][0]["unreachable"] is False
+
+
+def test_turn_capture_records_idempotently(client: TestClient) -> None:
+    senior_id = _enrol(client)["senior_id"]
+    import uuid as _uuid
+    interaction_id = str(_uuid.uuid4())
+    key = "idem-1"
+
+    body = {
+        "senior_id": senior_id,
+        "interaction_id": interaction_id,
+        "idempotency_key": key,
+        "occurred_at": "2026-09-09T00:00:00Z",
+        "transcript": "I took my pills",
+    }
+    r1 = client.post("/v1/turns", json=body, headers={"Authorization": "Bearer dev"})
+    assert r1.status_code == 200, r1.text
+
+    # Same idempotency key again -> domain rejects (AD-14).
+    r2 = client.post("/v1/turns", json=body, headers={"Authorization": "Bearer dev"})
+    assert r2.status_code == 400
+
+
+def test_unrecognised_turn_records_gap(client: TestClient) -> None:
+    senior_id = _enrol(client)["senior_id"]
+    import uuid as _uuid
+
+    body = {
+        "senior_id": senior_id,
+        "interaction_id": str(_uuid.uuid4()),
+        "idempotency_key": "idem-gap-1",
+        "occurred_at": "2026-09-09T00:00:00Z",
+        "transcript": "",
+    }
+    resp = client.post("/v1/turns/unrecognised", json=body, headers={"Authorization": "Bearer dev"})
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["gap_id"]
+
+
 def test_erase_shreds_and_stops_collection(client: TestClient) -> None:
     senior_id = _enrol(client)["senior_id"]
     client.post(
-        f"/api/seniors/{senior_id}/observations",
+        f"/v1/seniors/{senior_id}/observations",
         json={"signal_type": "medication", "outcome": "completed", "content": "dose"},
     )
 
-    resp = client.post(f"/api/seniors/{senior_id}/erase", json={"reason": "withdrawal"})
+    resp = client.post(f"/v1/seniors/{senior_id}/erase", json={"reason": "withdrawal"})
     assert resp.status_code == 200, resp.text
     body = resp.json()
     assert body["reason"] == "withdrawal"
@@ -119,13 +171,13 @@ def test_erase_shreds_and_stops_collection(client: TestClient) -> None:
 
     # Collection has stopped — further writes are rejected.
     resp2 = client.post(
-        f"/api/seniors/{senior_id}/observations",
+        f"/v1/seniors/{senior_id}/observations",
         json={"signal_type": "medication", "outcome": "completed", "content": "dose"},
     )
     assert resp2.status_code == 400
 
 
 def test_retention_sweep(client: TestClient) -> None:
-    resp = client.post("/api/jobs/retention-sweep")
+    resp = client.post("/v1/jobs/retention-sweep")
     assert resp.status_code == 200
     assert resp.json()["discarded"] == 0

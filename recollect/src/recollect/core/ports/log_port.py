@@ -33,6 +33,14 @@ class ObservationLogPort(ABC):
     async def save_senior(self, senior: Senior) -> None: ...
 
     @abstractmethod
+    async def get_senior(self, senior_id: UUID) -> Senior | None: ...
+
+    @abstractmethod
+    async def list_senior_ids(self) -> list[UUID]:
+        """Returns every enrolled senior id, in insertion/enrolment order (AD-7, FR-29)."""
+        ...
+
+    @abstractmethod
     async def get_enrolment(self, senior_id: UUID) -> Enrolment | None: ...
 
     @abstractmethod

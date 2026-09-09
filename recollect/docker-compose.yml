@@ -1,0 +1,47 @@
+# Local development stack: the Recollect API + PostgreSQL.
+#
+# Docker runs the backend against a real Postgres (no mock data). Supply the
+# vendor secrets in a `.env` (never committed) or drop RECOLLECT_ENVIRONMENT
+# to "dev" for in-memory adapters.
+#
+#   docker compose up --build
+#
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: recollect
+      POSTGRES_PASSWORD: recollect
+      POSTGRES_DB: recollect
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recollect -d recollect"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      RECOLLECT_ENVIRONMENT: production
+      RECOLLECT_DATABASE_URL: postgresql+asyncpg://recollect:recollect@db:5432/recollect
+      # Vendor services: set real values in .env for a full boot; with these
+      # empty the app fails fast because RECOLLECT_ENVIRONMENT != dev.
+      RECOLLECT_ANTHROPIC_API_KEY: ${RECOLLECT_ANTHROPIC_API_KEY:-}
+      RECOLLECT_ELEVENLABS_API_KEY: ${RECOLLECT_ELEVENLABS_API_KEY:-}
+      RECOLLECT_STT_BASE_URL: ${RECOLLECT_STT_BASE_URL:-}
+      RECOLLECT_VAULT_URL: ${RECOLLECT_VAULT_URL:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+
+volumes:
+  pgdata:

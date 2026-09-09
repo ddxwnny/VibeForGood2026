@@ -32,7 +32,7 @@ const DUMMY_AUDIO = btoa(unescape(encodeURIComponent("own-voice ulysses instruct
 
 async function enrol() {
   try {
-    const data = await json("/api/enrolments", {
+    const data = await json("/v1/enrolments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -45,6 +45,7 @@ async function enrol() {
       }),
     });
     document.getElementById("task-senior").value = data.senior_id;
+    document.getElementById("chat-senior").value = data.senior_id;
     document.getElementById("series-senior").value = data.senior_id;
     document.getElementById("window-senior").value = data.senior_id;
     document.getElementById("erase-senior").value = data.senior_id;
@@ -53,13 +54,13 @@ async function enrol() {
 }
 
 async function roster() {
-  try { show("roster-out", await json("/api/roster")); }
+  try { show("roster-out", await json("/v1/roster")); }
   catch (e) { show("roster-out", null, e); }
 }
 
 async function recordTask() {
   try {
-    const data = await json("/api/seniors/" + document.getElementById("task-senior").value + "/observations", {
+    const data = await json("/v1/seniors/" + document.getElementById("task-senior").value + "/observations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -74,7 +75,7 @@ async function recordTask() {
 
 async function series() {
   try {
-    const data = await json("/api/seniors/" + document.getElementById("series-senior").value + "/observations");
+    const data = await json("/v1/seniors/" + document.getElementById("series-senior").value + "/observations");
     show("series-out", data);
   } catch (e) { show("series-out", null, e); }
 }
@@ -82,7 +83,7 @@ async function series() {
 async function weekly() {
   try {
     const q = document.getElementById("window-baseline").checked ? "?baseline=true" : "";
-    const data = await json("/api/seniors/" + document.getElementById("window-senior").value + "/window" + q, {
+    const data = await json("/v1/seniors/" + document.getElementById("window-senior").value + "/window" + q, {
       method: "POST",
     });
     show("window-out", data);
@@ -91,7 +92,7 @@ async function weekly() {
 
 async function erase() {
   try {
-    const data = await json("/api/seniors/" + document.getElementById("erase-senior").value + "/erase", {
+    const data = await json("/v1/seniors/" + document.getElementById("erase-senior").value + "/erase", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ reason: document.getElementById("erase-reason").value }),
@@ -101,8 +102,143 @@ async function erase() {
 }
 
 async function sweep() {
-  try { show("sweep-out", await json("/api/jobs/retention-sweep", { method: "POST" })); }
+  try { show("sweep-out", await json("/v1/jobs/retention-sweep", { method: "POST" })); }
   catch (e) { show("sweep-out", null, e); }
 }
 
+// --- Aunty Chatbot & Voice Logic ---
+
+function appendChatMessage(sender, text) {
+  const box = document.getElementById("chat-box");
+  const msg = document.createElement("div");
+  const isSenior = sender === "Senior";
+  msg.style.padding = "8px 12px";
+  msg.style.borderRadius = "8px";
+  msg.style.maxWidth = "80%";
+  msg.style.fontSize = "15px";
+  msg.style.alignSelf = isSenior ? "flex-end" : "flex-start";
+  msg.style.background = isSenior ? "var(--primary)" : "var(--soft)";
+  msg.style.color = isSenior ? "#FFF" : "inherit";
+  msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+  return msg;
+}
+
+function playAudioBase64(base64Audio) {
+  const audio = new Audio("data:audio/mp3;base64," + base64Audio);
+  audio.play().catch((err) => {
+    console.warn("Audio play error:", err);
+  });
+}
+
+function speakOutLoud(text, audioBase64 = null) {
+  if (!document.getElementById("chat-tts")?.checked) return;
+  if (audioBase64) {
+    playAudioBase64(audioBase64);
+    return;
+  }
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95; // slightly unhurried for older adult usability (NFR-17)
+  window.speechSynthesis.speak(utterance);
+}
+
+let recognition = null;
+let isRecording = false;
+
+function toggleVoiceInput() {
+  const btn = document.getElementById("mic-btn");
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser. You can type your message.");
+    return;
+  }
+
+  if (isRecording && recognition) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-SG";
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    btn.textContent = "🛑 Listening…";
+    btn.style.borderColor = "#c0392b";
+    btn.style.color = "#c0392b";
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById("chat-input").value = transcript;
+    sendChat();
+  };
+
+  recognition.onerror = () => {
+    isRecording = false;
+    btn.textContent = "🎤 Speak";
+    btn.style.borderColor = "";
+    btn.style.color = "";
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    btn.textContent = "🎤 Speak";
+    btn.style.borderColor = "";
+    btn.style.color = "";
+  };
+
+  recognition.start();
+}
+
+async function sendChat() {
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  const seniorId = document.getElementById("chat-senior").value.trim();
+  if (!text) return;
+  if (!seniorId) {
+    alert("Please enrol a senior first or enter their Senior ID.");
+    return;
+  }
+
+  appendChatMessage("Senior", text);
+  input.value = "";
+
+  const thinkingElem = appendChatMessage("Recollect", "<em>Thinking…</em>");
+
+  try {
+    const data = await json(`/v1/seniors/${seniorId}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text }),
+    });
+
+    if (thinkingElem) {
+      thinkingElem.innerHTML = `<strong>Recollect:</strong> ${data.reply}`;
+    } else {
+      appendChatMessage("Recollect", data.reply);
+    }
+    speakOutLoud(data.reply, data.audio_base64);
+    show("chat-out", data);
+
+    // If an observation was recorded, automatically reload the functional series view
+    if (data.observations_recorded && data.observations_recorded.length > 0) {
+      document.getElementById("series-senior").value = seniorId;
+      series();
+    }
+  } catch (err) {
+    if (thinkingElem) {
+      thinkingElem.innerHTML = `<strong>System:</strong> Error: ${err.message}`;
+    } else {
+      appendChatMessage("System", "Error: " + err.message);
+    }
+    show("chat-out", null, err);
+  }
+}
+
 checkHealth();
+

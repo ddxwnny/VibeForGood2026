@@ -155,6 +155,25 @@ class PostgresObservationLog(ObservationLogPort):
                 session.add(_senior_row(senior))
                 await session.commit()
 
+    async def get_senior(self, senior_id: UUID) -> Senior | None:
+        async with self._sessions() as session:
+            row = await session.get(SeniorRow, senior_id)
+            if row is None:
+                return None
+            return Senior(
+                id=row.id,
+                display_name=row.display_name,
+                preferred_language=row.preferred_language,
+                created_at=_aware_utc(row.created_at),
+            )
+
+    async def list_senior_ids(self) -> list[UUID]:
+        async with self._sessions() as session:
+            rows = (
+                await session.execute(select(SeniorRow.id).order_by(SeniorRow.created_at))
+            ).scalars().all()
+            return list(rows)
+
     async def get_enrolment(self, senior_id: UUID) -> Enrolment | None:
         async with self._sessions() as session:
             row = await session.scalar(
