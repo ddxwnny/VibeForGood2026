@@ -1561,13 +1561,12 @@ function chat() {
             </div>
             ${m.place_memory ? `
               <div class="chat-place-card">
-                <img src="${escape(m.place_memory.image_url)}" alt="${escape(m.place_memory.title)}" class="chat-place-img">
+                <img src="${escape(m.place_memory.image_url)}" alt="Photo of a familiar place in Singapore" class="chat-place-img">
                 <div class="chat-place-meta">
                   <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
-                    <span class="tag" style="background:#e8efdf; color:var(--teal); font-size:11px">📍 Memory Place Photo</span>
+                    <span class="tag" style="background:#e8efdf; color:var(--teal); font-size:11px">📍 Photo Memory Recall</span>
                   </div>
-                  <h3>${escape(m.place_memory.title)}</h3>
-                  <p style="margin-top:2px; font-size:14px; color:var(--ink)">${escape(m.place_memory.prompt_question || 'Do you remember where this photo was taken?')}</p>
+                  <p style="margin:4px 0 8px 0; font-size:15px; font-weight:500; color:var(--ink)">${escape(m.place_memory.prompt_question || 'Do you remember where this photo was taken?')}</p>
                   <div class="chip-row">
                     <button type="button" class="chip-btn" data-place-answer="remember">💡 I remember!</button>
                     <button type="button" class="chip-btn" data-place-answer="hint">🔍 Give me a clue</button>
@@ -1575,8 +1574,7 @@ function chat() {
                   </div>
                 </div>
               </div>
-            ` : ''}
-            <p style="margin:0">${escape(m.text)}</p>
+            ` : `<p style="margin:0">${escape(m.text)}</p>`}
           </div>
         `).join('')}
       </div>
