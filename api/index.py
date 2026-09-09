@@ -2,12 +2,12 @@ import os
 import sys
 from pathlib import Path
 
-# Add project root and recollect/src to sys.path
+# Add project root and backend/src to sys.path
 _current_dir = Path(__file__).resolve().parent
 _root_dir = _current_dir.parent
-_recollect_src = _root_dir / "recollect" / "src"
+_backend_src = _root_dir / "backend" / "src"
 
-for p in [str(_recollect_src), str(_root_dir)]:
+for p in [str(_backend_src), str(_root_dir)]:
     if p not in sys.path:
         sys.path.insert(0, p)
 

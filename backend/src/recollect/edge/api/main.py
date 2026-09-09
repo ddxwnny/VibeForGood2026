@@ -77,7 +77,13 @@ async def health() -> dict:
     return {"status": "ok"}
 
 
-# Serve frontend assets: prefer project root frontend/ if available, fallback to static/
-_frontend_dir = Path(__file__).resolve().parents[5] / "frontend"
-_static_dir = _frontend_dir if _frontend_dir.is_dir() else (Path(__file__).parent / "static")
-app.mount("/", StaticFiles(directory=_static_dir, html=True), name="frontend")
+# Serve frontend assets from project root frontend/ directory
+_possible_frontend_dirs = [
+    Path(__file__).resolve().parents[5] / "frontend",
+    Path(__file__).resolve().parents[4] / "frontend",
+    Path.cwd() / "frontend",
+]
+_frontend_dir = next((d for d in _possible_frontend_dirs if d.is_dir()), None)
+if _frontend_dir is not None:
+    app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
+

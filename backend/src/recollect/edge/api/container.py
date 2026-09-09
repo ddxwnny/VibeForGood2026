@@ -38,10 +38,15 @@ def build_store(settings: Settings) -> AppState:
             # Copy/point database to /tmp which has full read-write permissions.
             if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
                 tmp_db = Path(tempfile.gettempdir()) / "recollect_local.db"
-                repo_db = Path(__file__).resolve().parents[4] / "recollect_local.db"
-                if not repo_db.is_file():
-                    repo_db = Path.cwd() / "recollect_local.db"
-                if repo_db.is_file() and not tmp_db.exists():
+                possible_repo_dbs = [
+                    Path(__file__).resolve().parents[5] / "database" / "recollect_local.db",
+                    Path(__file__).resolve().parents[4] / "database" / "recollect_local.db",
+                    Path(__file__).resolve().parents[4] / "recollect_local.db",
+                    Path.cwd() / "database" / "recollect_local.db",
+                    Path.cwd() / "recollect_local.db",
+                ]
+                repo_db = next((p for p in possible_repo_dbs if p.is_file()), None)
+                if repo_db and not tmp_db.exists():
                     try:
                         shutil.copyfile(repo_db, tmp_db)
                     except Exception:

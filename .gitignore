@@ -237,3 +237,15 @@ xcuserdata/
 *.ipa
 *.dSYM/
 .vercel
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+recollect_local.db
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+

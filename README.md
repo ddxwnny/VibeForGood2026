@@ -1,102 +1,122 @@
-# Recollect — iPhone app
+# Recollect — Cognitive Wellness & Connection Platform
 
-Author: NgYanHerng
+**Recollect** is a multimodal conversational companion and cognitive wellness observation platform designed for older adults and their families. It pairs empathetic dialogue and reminiscence prompts with clinical cognitive observation models and caregiver insight windows.
 
-An iPhone UI/UX prototype for family connection and everyday conversations.
-The mobile interface is packaged in a native iOS app using Capacitor. Screens are
-bundled on the phone; the demo does not require a running backend or browser URL.
-The UI uses HTML/CSS/JavaScript inside the app's WebView, rather than SwiftUI.
+---
 
-## Open the iPhone app in Xcode
+## 🏗️ Architecture Overview
 
-Prerequisites: Node.js 22+, Xcode 26+ with first-launch components installed,
-and an iOS simulator runtime or an iPhone. The app targets iOS 15+.
+The repository is organized into distinct, modular tiers:
 
-```bash
-npm ci
-npm run ios:open
+```text
+├── frontend/             # Web & Mobile UI (HTML5, CSS3, ES Modules, Speech & Audio subsystem)
+├── backend/              # Python FastAPI backend (Hexagonal architecture: Core, Ports, Adapters)
+│   ├── src/recollect/    # Domain core, application use-cases, and API routes
+│   ├── tests/            # Test suite (Unit, API, Architecture dependency invariants)
+│   ├── pyproject.toml    # Python dependencies (uv-managed)
+│   └── Dockerfile        # Production multi-stage Docker container
+├── database/             # Relational persistence & migrations
+│   ├── alembic.ini       # Alembic migration configuration
+│   ├── migrations/       # Schema versions and environment runners
+│   └── docker-compose.yml# Local PostgreSQL service container
+├── docs/                 # Project documentation & design hub
+│   ├── architecture/     # Architecture spine, ADRs, and review audits
+│   ├── specs/            # Technical specifications & protocols
+│   ├── prds/             # Product Requirements Documents
+│   ├── forge/            # Product discovery reports & ideation
+│   ├── design/           # UI/UX design specifications & assets
+│   └── epics.md          # Implementation epics & stories
+├── ios/                  # Native iOS application wrapper (Capacitor)
+├── api/                  # Serverless entrypoint (Vercel)
+└── scripts/              # Local development tooling & preview servers
 ```
 
-In Xcode, select the **App** scheme and an iPhone simulator, then press **Run**.
-For your own iPhone, select your development team under **Signing & Capabilities**,
-choose a unique bundle identifier if needed, connect the phone and select it as
-the destination. The current `com.recollect.demo` identifier is a development placeholder.
+---
 
-After changing frontend files, run `npm run ios:sync` before rebuilding in Xcode.
-`npm run ios:run` also synchronizes and launches Capacitor's device selection flow.
+## 🚀 Quick Start
 
-**Current machine limitation:** native build verification stopped before compiling
-because this Mac's Xcode installation is missing `DVTDownloads.framework`.
-Complete Xcode's first-launch setup (Xcode's diagnostic suggests
-`xcodebuild -runFirstLaunch`) and install an iOS simulator runtime. If the framework
-remains missing, repair/reinstall Xcode. Native compilation has not yet been verified.
+### 1. Prerequisites
 
-## Quick visual preview on your computer
+- **Node.js**: `v22+`
+- **Python**: `3.13+` with [`uv`](https://docs.astral.sh/uv/) installed
 
+### 2. Running the Full Stack Locally
+
+#### Backend (FastAPI API)
 ```bash
+# Start backend API on http://127.0.0.1:8000
+npm run dev:backend
+# or directly with uv:
+uv run --directory backend uvicorn recollect.edge.api.main:app --reload --port 8000
+```
+
+#### Frontend & Local Proxy Server
+```bash
+# Start local preview on http://127.0.0.1:3000 (proxies /v1 and /api to backend)
 npm run dev
 ```
 
-Open http://127.0.0.1:3000. This is a development preview of the same phone interface,
-constrained to 480px on large displays. It is not a separate desktop layout.
-No npm dependencies are needed for this browser-only preview. Refresh after edits.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) in your browser.
 
-## Mobile experience
+---
 
-- Full-screen welcome, caregiver signup/login and invitation onboarding.
-- Bottom tabs for **Family**, **Overview** and **Notes**.
-- Separate adult profiles, two-column metric cards and stacked recommendations.
-- Large conversation controls, typing alternative and an explicit finish action.
-- iPhone safe-area spacing, portrait orientation, light appearance, Recollect app icon
-  and a matching launch screen. No Android project is included.
+## 🧪 Testing & Validation
 
-## Explore the demo
-
-1. Choose **I'm a caregiver**, accept the demo acknowledgment and continue with the fictional credentials.
-2. Open Arun or Lily. Use **Overview** and the profile selector to view their separate data.
-3. Use **Notes** to select concerns and add fictional examples; save before switching adults.
-4. On **Family**, choose **Link someone**, enter a fictional name and create an invitation.
-5. Choose **Try their invitation**, enter the displayed code and confirm sharing consent.
-6. Preview speaking by tapping the microphone twice, or type a fictional reply. Finish explicitly.
-
-To try the older-adult experience directly, choose **I'd like to talk** and enter
-`123456` when no generated invitation is pending. This is a reusable demo shortcut.
-Generated invitations expire after ten minutes and are consumed on acceptance.
-
-## Simulation boundaries
-
-All profiles, metrics and recommendations are fictional. Account creation, login,
-linking and AI responses are UI demonstrations. No passwords are saved, no email
-is sent, no audio is recorded, and no clinical assessment runs. State lasts only
-for the current app session; restarting resets it. Invites are not synchronized
-across different phones. Use fictional personal and health information only.
-
-Real accounts, durable device authorization, storage, consent management, speech
-recognition, AI and validated health interpretation remain future implementation.
-Family concerns do not modify any score or recommendation in this prototype.
-
-## Project files and commands
-
-```text
-frontend/                   Mobile screens, styles and simulated interactions
-ios/App/App.xcodeproj       Native iPhone project
-ios/App/App/                App lifecycle, launch screen and icon
-capacitor.config.json       App ID, bundled frontend and iOS configuration
-backend/server.js           Optional development preview server and /api/health
-docs/recollect/              Draft design and experience specifications
-```
-
+### Run Backend Tests (179 Automated Invariant & Unit Tests)
 ```bash
-npm run check      # Check frontend/backend JavaScript syntax
-npm run ios:sync   # Copy mobile UI into the native app bundle
-npm run ios:open   # Sync and open Xcode
-npm run ios:run    # Sync and run on an available iOS target
-npm run dev       # Browser preview with backend watching
+npm run test:backend
+# or directly with uv:
+uv run --directory backend pytest
 ```
 
-Generated bundled assets in `ios/App/App/public` are ignored by Git; always sync
-after pulling frontend updates. Commit the Xcode project and package lockfile.
-Do not commit signing credentials, build output or personal Xcode state.
+### Run Frontend & Script Syntax Checks
+```bash
+npm run check
+```
 
-Design documents remain draft because the repository lacks BMad's logging and
-finalization scripts. UI checks are not clinical or accessibility certification.
+---
+
+## 📱 Mobile App (iOS)
+
+The mobile client is packaged as a native iOS app using Capacitor:
+
+1. **Install dependencies**:
+   ```bash
+   npm ci
+   ```
+2. **Synchronize web assets to Xcode project**:
+   ```bash
+   npm run ios:sync
+   ```
+3. **Open project in Xcode**:
+   ```bash
+   npm run ios:open
+   ```
+
+In Xcode, select the **App** scheme and an iPhone simulator / connected device, then press **Run**.
+
+---
+
+## 🗄️ Database & Migrations
+
+The backend defaults to SQLite for local zero-config development, and supports PostgreSQL for production deployments.
+
+- **Start local PostgreSQL container**:
+  ```bash
+  docker compose -f database/docker-compose.yml up -d
+  ```
+
+- **Run schema migrations**:
+  ```bash
+  uv run --directory backend alembic -c database/alembic.ini upgrade head
+  ```
+
+See [database/README.md](file:///c:/Users/braed/OneDrive/Desktop/VIBEFORGOOD/database/README.md) for full details.
+
+---
+
+## 🔒 Privacy & Clinical Ethics Boundaries
+
+- **Observations, Not Diagnoses**: Recollect produces structured clinical observation signals (prosody, latency, memory recall, orientation) to aid families and clinicians; it does not issue automated medical diagnoses.
+- **Explicit Consent & Sovereign Key Storage**: Senior consent is revocable at any time. Data is protected with cryptographic isolation.
+- **Egress Guardrails**: Audio streams and raw transcripts never leave local boundaries without explicit data grants.

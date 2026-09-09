@@ -7,12 +7,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "node --watch backend/server.js",
-    "start": "node backend/server.js",
-    "check": "node --check backend/server.js && node --check frontend/app.js",
-    "ios:sync": "cap sync ios",
-    "ios:open": "cap sync ios && cap open ios",
-    "ios:run": "cap sync ios && cap run ios"
+    "dev": "node --watch scripts/preview-server.js",
+    "dev:frontend": "node --watch scripts/preview-server.js",
+    "dev:backend": "uv run --directory backend uvicorn recollect.edge.api.main:app --reload --port 8000",
+    "start": "node scripts/preview-server.js",
+    "check": "node --check scripts/preview-server.js && node --check frontend/app.js",
+    "test:backend": "uv run --directory backend pytest",
+    "ios:sync": "npx cap sync ios",
+    "ios:open": "npx cap sync ios && npx cap open ios",
+    "ios:run": "npx cap sync ios && npx cap run ios"
   },
   "dependencies": {
     "@capacitor/core": "^8.5.1",

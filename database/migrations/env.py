@@ -4,7 +4,17 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
+from pathlib import Path
 from logging.config import fileConfig
+
+# Add backend/src to path so models can be imported cleanly
+_backend_src = Path(__file__).resolve().parents[2] / "backend" / "src"
+if _backend_src.is_dir() and str(_backend_src) not in sys.path:
+    sys.path.insert(0, str(_backend_src))
+_backend_src_alt = Path(__file__).resolve().parents[1] / "src"
+if _backend_src_alt.is_dir() and str(_backend_src_alt) not in sys.path:
+    sys.path.insert(0, str(_backend_src_alt))
 
 from alembic import context
 from sqlalchemy import pool
