@@ -3,10 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "node --watch backend/server.js",
     "start": "node backend/server.js",
-    "check": "node --check backend/server.js && node --check frontend/app.js"
+    "check": "node --check backend/server.js && node --check frontend/app.js",
+    "ios:sync": "cap sync ios",
+    "ios:open": "cap sync ios && cap open ios",
+    "ios:run": "cap sync ios && cap run ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.1"
   }
 }

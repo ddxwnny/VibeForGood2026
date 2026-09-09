@@ -8,9 +8,9 @@ sources:
 
 ## Foundation
 
-Responsive web, designed first for personal phones and expanded for caregiver desktop use. Native HTML controls; no external UI system. [DESIGN.md](DESIGN.md) defines visual identity. These documents describe the intended experience and explicitly distinguish current prototype limits. When finalized, the document contracts take precedence over illustrative screens.
+iPhone-only application, packaged with Capacitor in a native Xcode project. Portrait orientation and light appearance. Native HTML controls inside the bundled WKWebView; no separate desktop product layout. [DESIGN.md](DESIGN.md) defines visual identity. These documents describe the intended experience and explicitly distinguish current prototype limits. When finalized, the document contracts take precedence over illustrative screens.
 
-The [interactive prototype](../../frontend/index.html) must be opened through the local Node server. All profiles and metrics are fictional. Account access, pairing, speech capture and AI replies are simulated. The prototype keeps state in memory for one page session; reload resets it. No browser microphone permission is requested, no email is sent, no clinical calculation runs, and no cross-device synchronization occurs.
+The [interactive prototype](../../frontend/index.html) can run from bundled assets inside the iPhone app; the local Node server is only needed for browser preview. All profiles and metrics are fictional. Account access, pairing, speech capture and AI replies are simulated. The prototype keeps state in memory for one app session; app restart or WebView reload resets it. No browser microphone permission is requested, no email is sent, no clinical calculation runs, and no cross-device synchronization occurs.
 
 ## Information Architecture
 
@@ -72,13 +72,13 @@ Use tap/click and native keyboard controls. Do not depend on dragging, hover, au
 
 ## Accessibility Floor
 
-Body uses {typography.body.fontSize}; older-adult copy uses {typography.older-adult-body.fontSize}. Targets are 48px minimum, 56px in the older-adult flow; microphone 88px. Provide skip link, visible focus, ordered headings, semantic forms, labelled controls, status announcements and chart descriptions. Support wrapping, zoom and reduced motion. No mandatory audio; typing is available. Production testing must include keyboard, VoiceOver/TalkBack, zoom, hearing and speech differences. Do not claim completed accessibility certification from this prototype.
+Body uses {typography.body.fontSize}; older-adult copy uses {typography.older-adult-body.fontSize}. Primary targets are 52px minimum, 56px in the older-adult flow; back and navigation targets are at least 44px; microphone 88px. Provide skip link, visible focus, ordered headings, semantic forms, labelled controls, status announcements and chart descriptions. Support wrapping, zoom and reduced motion. No mandatory audio; typing is available. Production testing must include keyboard, VoiceOver/TalkBack, zoom, hearing and speech differences. Do not claim completed accessibility certification from this prototype.
 
 ## Key Flows
 
 ### Mei connects a new relative
 
-1. Mei chooses supporting someone and previews caregiver signup.
+1. Mei chooses the caregiver role and previews caregiver signup.
 2. She sees Arun and Lily, fictional seeded profiles, in her family list.
 3. She chooses Link someone and creates an invitation for Sam.
 4. Sam opens the code-entry flow, enters the invitation and sees Mei's name and sharing explanation.
@@ -125,7 +125,7 @@ Production must also revoke caregiver access; the demo does not have a real auth
 
 ## Responsive & Platform
 
-Caregiver desktop uses persistent sidebar; phone uses top navigation with visible labels. Cards stack on phones; metrics remain a compact two-column grid. Older-adult content stays single-column on all sizes. Use device/browser capabilities only after permission in the eventual implementation.
+Caregiver navigation is a fixed bottom tab bar: Family, Overview and Notes. The active adult persists across Overview and Notes. Welcome and onboarding use full-screen phone layouts with compact back navigation; no tabs until caregiver access. Older adults have no caregiver tabs. All content respects the iPhone safe areas and portrait orientation; cards stack and metrics use two columns. Browser preview is capped at 480px. Scrolling keeps content clear of the bottom tab bar. Conversation controls are in document flow so enlarged text and the keyboard cannot be trapped behind a fixed composer. Use device capabilities only after permission in the eventual implementation.
 
 ## Inspiration & Anti-patterns
 
@@ -137,4 +137,8 @@ Hackathon content is fictional. Observation counts and next steps are prewritten
 
 ## Open items
 
-Non-blocking draft assumptions: English-first responsive web; one caregiver per demo connection; no actual voice recording or read-aloud; simulated in-memory data; no production risk algorithm. Resolve language needs, shared-caregiver permissions, clinical measures, transcript sharing/retention and durable device linking before live implementation. Optional UX reviewer validation has not been run. BMad workflow logging/finalization remains unavailable as documented in SOURCE.md.
+Non-blocking draft assumptions: English-first iPhone app; one caregiver per demo connection; no actual voice recording or read-aloud; simulated in-memory data; no production risk algorithm. Resolve language needs, shared-caregiver permissions, clinical measures, transcript sharing/retention and durable device linking before live implementation. Optional UX reviewer validation has not been run. BMad workflow logging/finalization remains unavailable as documented in SOURCE.md.
+
+## iPhone packaging and validation
+
+`ios/App/App.xcodeproj` is the native app project. `npm run ios:sync` copies the current frontend into the app bundle; it does not run the Node server on the phone. Bundle ID `com.recollect.demo` is a development placeholder. The project targets iPhone only, iOS 15+, portrait and light appearance. Real-device signing is configured in Xcode. No Android target is included. Browser/mobile checks are separate from native verification: the current Mac could not run the simulator build because its Xcode installation is missing DVTDownloads.framework. Native compilation, safe-area behavior and keyboard interaction still need verification after Xcode setup is repaired.

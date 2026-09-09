@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17132" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="launch">
+  <device id="retina6_12" orientation="portrait" appearance="light"/>
+  <dependencies><deployment identifier="iOS"/><plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17105"/><capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/></dependencies>
+  <scenes><scene sceneID="scene"><objects>
+    <viewController id="launch" sceneMemberID="viewController"><view key="view" contentMode="scaleToFill" id="canvas">
+      <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+      <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+      <subviews><label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="recollect" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="wordmark">
+        <rect key="frame" x="96" y="402" width="201" height="48"/>
+        <fontDescription key="fontDescription" name="Georgia" family="Georgia" pointSize="40"/>
+        <color key="textColor" red="0.098" green="0.349" blue="0.306" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+      </label></subviews>
+      <color key="backgroundColor" red="0.973" green="0.969" blue="0.949" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+      <constraints><constraint firstItem="wordmark" firstAttribute="centerX" secondItem="canvas" secondAttribute="centerX" id="center-x"/><constraint firstItem="wordmark" firstAttribute="centerY" secondItem="canvas" secondAttribute="centerY" id="center-y"/></constraints>
+    </view></viewController><placeholder placeholderIdentifier="IBFirstResponder" id="responder" sceneMemberID="firstResponder"/>
+  </objects></scene></scenes>
+</document>

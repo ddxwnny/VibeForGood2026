@@ -222,3 +222,10 @@ node_modules/
 .DS_Store
 .env.*
 !.env.example
+
+# iOS local build/signing state
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.ipa
+*.dSYM/

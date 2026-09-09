@@ -1,6 +1,6 @@
 ---
 name: Recollect
-description: A calm family connection and conversation interface.
+description: An iPhone application for family connection and everyday conversations.
 status: draft
 updated: 2026-09-09
 sources:
@@ -22,15 +22,15 @@ colors:
 typography:
   display:
     fontFamily: Georgia, serif
-    fontSize: 42px
+    fontSize: 35px
     fontWeight: '400'
     lineHeight: '1.12'
   body:
-    fontFamily: Avenir Next, Segoe UI, sans-serif
+    fontFamily: -apple-system, BlinkMacSystemFont, sans-serif
     fontSize: 16px
     lineHeight: '1.55'
   older-adult-body:
-    fontFamily: Avenir Next, Segoe UI, sans-serif
+    fontFamily: -apple-system, BlinkMacSystemFont, sans-serif
     fontSize: 19px
     lineHeight: '1.55'
 rounded:
@@ -42,7 +42,7 @@ spacing:
   small: 8px
   related: 16px
   section: 24px
-  desktop-gutter: 42px
+  app-max-width: 480px
   mobile-gutter: 20px
 components:
   primary-button:
@@ -59,7 +59,7 @@ components:
 
 ## Brand & Style
 
-Recollect feels like an invitation to connect. Warm paper-like backgrounds, botanical shapes, restrained teal and generous space support the user's proposed onboarding and conversation screens. This is a proposed direction, open to user refinement. No existing component system is imposed.
+Recollect feels like an invitation to connect. Warm paper-like backgrounds, botanical shapes, restrained teal and generous space support the user's proposed onboarding and conversation screens. This is a proposed direction, open to user refinement. System fonts and native form controls complement the mobile layout. Capacitor packages these screens in an iOS app; this is a hybrid interface, not a SwiftUI rewrite.
 
 ## Colors
 
@@ -71,26 +71,26 @@ Georgia headlines supply warmth; system sans-serif handles controls and informat
 
 ## Layout & Spacing
 
-Caregiver: 236px sidebar and constrained main area on desktop; top navigation and a single-column card layout below 720px. Metrics become two columns below 1050px. Older-adult content stays within 740px; linking forms within 540px. Use {spacing.mobile-gutter} on phones. Preserve natural scrolling and wrapping at zoom.
+iPhone portrait is the product surface. Every screen is single-column; metric cards use two columns. The app header is compact, with a back control on child screens. Caregiver navigation uses a fixed bottom tab bar (Family / Overview / Notes). Content reserves space for the tab bar and the home indicator. Respect top and bottom safe-area insets. Use {spacing.mobile-gutter} on phones. Browser previews stay at a maximum of 480px instead of switching to a desktop layout. Preserve natural scrolling, wrapping and text zoom. Keyboard focus must scroll fields into view; no fixed speech composer obscures replies.
 
 ## Elevation & Depth
 
-Cards use thin borders and contrasting surfaces. The welcome quote and microphone receive modest shadows; shadows do not encode status.
+Cards use thin borders and contrasting surfaces. The microphone receives a modest halo; shadows do not encode status.
 
 ## Shapes
 
-Cards use {rounded.lg}; inputs {rounded.sm}; buttons {rounded.md}. Circles are for initials and the microphone. The welcome illustration is built in CSS and needs no remote assets.
+Cards use {rounded.lg}; inputs {rounded.sm}; buttons {rounded.md}. Circles are for initials and the microphone. The welcome illustration is built in CSS and needs no remote assets. [App icon source](app-icon.svg) uses the same two-leaf mark on an opaque cream square, rasterized to 1024px for Xcode. iOS applies its own icon mask. The launch screen shows the Recollect wordmark on cream.
 
 ## Components
 
 | Component | Visual rules |
 |---|---|
-| Primary button | Teal with white text; 48px minimum height, 56px on older-adult screens. |
+| Primary button | Teal with white text; 52px minimum height, 56px on older-adult screens; secondary navigation targets are at least 44px. |
 | Secondary button | Transparent fill, dark text and visible border. |
 | Card | Warm surface, 22px radius, 22–27px padding. |
-| Navigation | Active item has sage fill and a text label; icons supplement words. |
+| Navigation | Bottom tabs use sage active fill, icon and visible text; child screens have a labelled Back control. |
 | Profile selector | Visible adult context, labelled native select. |
-| Form field | Visible label, 48px minimum height, contrast border and focus ring. |
+| Form field | Visible label, 52px minimum height, contrast border and focus ring. |
 | Concern checkbox | Full-width bordered row with large native checkbox; selected state includes a checkmark. |
 | Attention label | Amber background and dark amber wording; no red risk gauge. |
 | Activity chart | Sage bars, latest bar teal; values and period labels remain visible. |
